@@ -1,4 +1,4 @@
-import { RowerDataCharacteristic } from "../fitnessmachine/RowerDataCharacteristic";
+import { RowerDataCharacteristic } from "../../fitnessmachine/RowerDataCharacteristic";
 
 test("call updateValueCallback", () => {
 
