@@ -22,7 +22,7 @@ const options = {
 const { values: { name, port } } = parseArgs({ options });
 
 const fitnessMachine = new FitnessMachine({ name: name ? name : "FDF Rower" })
-const monitor = new Monitor({ port: port ? port : "/dev/ttyS0" }, (captur: Capture) => {
+const monitor = new Monitor({ port: port ? port : "/dev/ttyUSB0" }, (captur: Capture) => {
   fitnessMachine.onCapture(captur);
 });
 monitor.connect((error?) => {
