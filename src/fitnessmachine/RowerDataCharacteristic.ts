@@ -1,6 +1,6 @@
 import log from 'loglevel'
 import { Characteristic } from '@abandonware/bleno'
-import { Capture } from '../monitor/Capture';
+import { Data } from '../monitor/Data';
 
 type UpdateValueCallback = (data: Buffer) => void;
 
@@ -33,19 +33,19 @@ export class RowerDataCharacteristic extends Characteristic {
         this.maxValueSize = null;
     }
 
-    onCapture(capture: Capture): void {
+    onData(data: Data): void {
 
-        const flags = Buffer.alloc(2);
+        const featureData: Array<Buffer> = []
         // 1   0 .. Stroke rate and Stroke count (1 if NOT present)
         // 0   1 .. Average Stroke rate (1 if present)
         // 1   2 .. Total Distance present
-        // 1   3 .. Instantaneous Pace (1 if present)
+        // ?   3 .. Instantaneous Pace (1 if present)
         // 0   4 .. Average Pace (1 if present)
-        // 1   5 .. Instantaneous Power (1 if present)
+        // ?   5 .. Instantaneous Power (1 if present)
         // 0   6 .. Average Power (1 if present)
         // 0   7 .. Resistance Level (1 if present)
-        flags.writeUInt8(0x2D || 0);
-        // 1   8 .. Expended Energy (1 if present)
+        var featuresOctet1 = 0x05;
+        // ?   8 .. Expended Energy (1 if present)
         // 0   9 .. Heart Rate (1 if present)
         // 0  10 .. Metabolic Equivalent (1 if present)
         // 1  11 .. Elapsed Time in seconds (1 if present)
@@ -53,24 +53,46 @@ export class RowerDataCharacteristic extends Characteristic {
         // 0  13 .. Reserved for future use
         // 0  14 .. Reserved for future use
         // 0  15 .. Reserved for future use
-        flags.writeUInt8(0x09 || 0, 1);
+        var featuresOctet2 = 0x08;
 
         const totalDistance = Buffer.alloc(3);
-        totalDistance.writeUInt8((capture.distance || 0) & 255)
-        totalDistance.writeUInt16LE((capture.distance || 0) >> 8, 1)
+        totalDistance.writeUInt8((data.distance || 0) & 255)
+        totalDistance.writeUInt16LE((data.distance || 0) >> 8, 1)
+        featureData.push(totalDistance);
 
-        const instantaneousPace = Buffer.alloc(2);
-        instantaneousPace.writeUInt16LE(capture.time500mSplit || 0)
+        // Bit 3 - Instantaneous Pace
+        if (data.time500mSplit) {
+            const instantaneousPace = Buffer.alloc(2);
+            instantaneousPace.writeUInt16LE(data.time500mSplit || 0)
+            featuresOctet1 |= 8;
+            featureData.push(instantaneousPace);
+        }
 
-        const instantaneousPower = Buffer.alloc(2);
-        instantaneousPower.writeUInt16LE(capture.watt || 0)
+        // Bit 5 - Instantaneous Power
+        if (data.wattsPreviousStroke) {
+            const instantaneousPower = Buffer.alloc(2);
+            instantaneousPower.writeUInt16LE(data.wattsPreviousStroke || 0)
+            featuresOctet1 |= 32;
+            featureData.push(instantaneousPower);
+        }
 
-        const energyPerHour = Buffer.alloc(2);
-        energyPerHour.writeUInt16LE(capture.caloriesPerHour || 0)
+        // Bit 8 - Expended Energy
+        // const totalEnergy = Buffer.alloc(2);
+        // totalEnergy.writeUInt16LE(0)
+        // const energyPerHour = Buffer.alloc(2);
+        // energyPerHour.writeUInt16LE(data.caloriesPerHour || 0)
+        // const energyPerMinute = Buffer.alloc(1);
+        // energyPerMinute.writeUInt8(0)
 
         const elapsedTime = Buffer.alloc(2);
-        elapsedTime.writeUInt16LE(capture.elapsedTime || 0)
+        elapsedTime.writeUInt16LE(data.elapsedTime || 0)
+        featureData.push(elapsedTime);
 
-        this.updateValueCallback && this.updateValueCallback(Buffer.concat([flags, totalDistance, instantaneousPace, instantaneousPower, energyPerHour, elapsedTime]));
+        const featureFlags = Buffer.alloc(2);
+        featureFlags.writeUInt8(featuresOctet1 || 0);
+        featureFlags.writeUInt8(featuresOctet2 || 0, 1);
+        featureData.unshift(featureFlags);
+
+        this.updateValueCallback && this.updateValueCallback(Buffer.concat(featureData));
     }
 }

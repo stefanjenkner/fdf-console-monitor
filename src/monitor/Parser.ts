@@ -16,11 +16,11 @@ export class Parser {
 
         return {
             elapsedTime: totalMinutes*60 + totalSeconds,
-            time500mSplit: to500mMinutes*60 + to500mSeconds,
+            time500m: to500mMinutes*60 + to500mSeconds,
             distance: distance,
             level: level,
-            watt: watt,
-            caloriesPerHour: caloriesPerHour,
+            watts: watt,
+            cals: caloriesPerHour,
             strokesPerMinute: strokesPerMinute
         }
     }

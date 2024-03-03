@@ -2,9 +2,9 @@ export type Capture = {
 
     elapsedTime: number;
     distance: number;
-    time500mSplit: number;
+    time500m: number;
     strokesPerMinute: number;
-    watt: number;
-    caloriesPerHour: number;
+    watts: number;
+    cals: number;
     level: number;
 }

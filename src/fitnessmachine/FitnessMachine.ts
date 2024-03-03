@@ -1,7 +1,7 @@
 import log from 'loglevel'
 import bleno from '@abandonware/bleno'
 import { FitnessMachineService } from './FitnessMachineService'
-import { Capture } from '../monitor/Capture';
+import { Data } from '../monitor/Data';
 
 interface FitnessMachineOptions {
     name: string
@@ -66,8 +66,8 @@ export class FitnessMachine {
         });
     }
 
-    onCapture(capture : Capture) {
+    onData(data : Data) {
 
-        this.fitnessMachineService.onCapture(capture);
+        this.fitnessMachineService.onData(data);
     }
 }

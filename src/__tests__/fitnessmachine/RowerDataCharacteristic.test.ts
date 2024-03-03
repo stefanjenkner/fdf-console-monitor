@@ -1,25 +1,57 @@
 import { RowerDataCharacteristic } from '../../fitnessmachine/RowerDataCharacteristic';
+import { Data } from '../../monitor/Data';
 
-test('call updateValueCallback', () => {
+test('call updateValueCallback when active', () => {
 
     // setup
-    const capture = {
+    const data : Data = {
         strokesPerMinute: 0,
         distance: 123,
         time500mSplit: 115,
+        time500mAverage: null,
         elapsedTime: 45,
         caloriesPerHour: 987,
+        caloriesTotal: null,
+        wattsPreviousStroke: 105,
+        wattsAverage: null,
         level: 0,
-        watt: 105
     }
     const updateValueCallback = jest.fn();
     const rowerDataCharacteristik = new RowerDataCharacteristic()
     rowerDataCharacteristik.onSubscribe(0, updateValueCallback)
     
     // execute
-    rowerDataCharacteristik.onCapture(capture);
+    rowerDataCharacteristik.onData(data);
 
     // verify
-    const expected = Buffer.from([0x2D, 0x09, 123, 0, 0, 115, 0, 105, 0, 219, 3, 45, 0]);
+    const expected = Buffer.from([0x2D, 0x08, 123, 0, 0, 115, 0, 105, 0, 45, 0]);
+    expect(updateValueCallback).toHaveBeenCalledWith(expected);
+});
+
+
+test('call updateValueCallback when paused or stopped', () => {
+
+    // setup
+    const data : Data = {
+        strokesPerMinute: 0,
+        distance: 123,
+        time500mSplit: null,
+        time500mAverage: null,
+        elapsedTime: 45,
+        caloriesPerHour: null,
+        caloriesTotal: null,
+        wattsPreviousStroke: null,
+        wattsAverage: null,
+        level: 0,
+    }
+    const updateValueCallback = jest.fn();
+    const rowerDataCharacteristik = new RowerDataCharacteristic()
+    rowerDataCharacteristik.onSubscribe(0, updateValueCallback)
+    
+    // execute
+    rowerDataCharacteristik.onData(data);
+
+    // verify
+    const expected = Buffer.from([0x5, 0x08, 123, 0, 0, 45, 0]);
     expect(updateValueCallback).toHaveBeenCalledWith(expected);
 });

@@ -1,7 +1,7 @@
 import { PrimaryService } from '@abandonware/bleno';
 import { RowerFeatureCharacteristic } from './RowerFeatureCharacteristic';
 import { RowerDataCharacteristic } from './RowerDataCharacteristic';
-import { Capture } from '../monitor/Capture';
+import { Data } from '../monitor/Data';
 
 const rowerFeatureCharacteristic = new RowerFeatureCharacteristic();
 const rowerDataCharacteristic = new RowerDataCharacteristic();
@@ -20,8 +20,8 @@ export class FitnessMachineService extends PrimaryService {
         this.rowerFeatureCharacteristic = rowerFeatureCharacteristic;
     }
 
-    onCapture(capture : Capture) : void {
+    onData(data : Data) : void {
 
-        this.rowerDataCharacteristic && this.rowerDataCharacteristic.onCapture(capture);
+        this.rowerDataCharacteristic && this.rowerDataCharacteristic.onData(data);
     }
 }

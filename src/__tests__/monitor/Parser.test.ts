@@ -11,8 +11,8 @@ test('parsing raw data to captur object', () => {
     // verify
     expect(capture.elapsedTime).toBe(6);
     expect(capture.distance).toBe(14);
-    expect(capture.time500mSplit).toBe(163);
-    expect(capture.watt).toBe(105);
-    expect(capture.caloriesPerHour).toBe(659);
+    expect(capture.time500m).toBe(163);
+    expect(capture.watts).toBe(105);
+    expect(capture.cals).toBe(659);
     expect(capture.level).toBe(4);
 });

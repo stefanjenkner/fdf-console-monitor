@@ -2,8 +2,8 @@ import log from 'loglevel'
 
 import { SerialPort } from 'serialport'
 import { ReadlineParser } from '@serialport/parser-readline'
-import { Capture } from './Capture';
 import { Parser } from './Parser';
+import { Data } from './Data';
 
 interface MonitorOptions {
     port: string
@@ -11,7 +11,7 @@ interface MonitorOptions {
 
 export type ConnectCallback = (err: Error | null) => void;
 export type DisconnectCallback = (err: Error | null) => void;
-export type OnDataCallback = (capture: Capture) => void;
+export type OnDataCallback = (data: Data) => void;
 
 export class Monitor {
 
@@ -38,13 +38,27 @@ export class Monitor {
             port.write('C\n');
             const parser = port.pipe(new ReadlineParser());
             const captureParser = new Parser();
-            parser.on('data', (data : string) => {
+            parser.on('data', (rawData : string) => {
 
-                log.debug(`Received: ${data}`);
+                log.debug(`Received: ${rawData}`);
 
-                if (data.startsWith('A')) {
-                    this.onDataCallback && this.onDataCallback(captureParser.parse(data));
-                } else if (data.startsWith('W')) {
+                if (rawData.startsWith('A')) {
+                    const capture = captureParser.parse(rawData);
+                    const isPausedOrStopped = capture.strokesPerMinute === 0;
+                    const data : Data = {
+                        elapsedTime: capture.elapsedTime,
+                        distance: capture.distance,
+                        strokesPerMinute: capture.strokesPerMinute,
+                        level: capture.level,
+                        time500mSplit: isPausedOrStopped ? null : capture.time500m,
+                        time500mAverage: isPausedOrStopped ? capture.time500m : null,
+                        wattsPreviousStroke: isPausedOrStopped ? null : capture.watts,
+                        wattsAverage: isPausedOrStopped ? capture.watts : null,
+                        caloriesPerHour: isPausedOrStopped ? null : capture.cals,
+                        caloriesTotal: isPausedOrStopped ? capture.cals : null,
+                    }
+                    this.onDataCallback && this.onDataCallback(data);
+                } else if (rawData.startsWith('W')) {
                     port.write('K\n')
                 }
             });
