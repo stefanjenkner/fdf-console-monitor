@@ -8,7 +8,7 @@ test('call updateValueCallback', () => {
         distance: 123,
         time500mSplit: 115,
         elapsedTime: 45,
-        caloriesPerHour: 0,
+        caloriesPerHour: 987,
         level: 0,
         watt: 0
     }
@@ -20,6 +20,6 @@ test('call updateValueCallback', () => {
     rowerDataCharacteristik.onCapture(capture);
 
     // verify
-    const expected = Buffer.from([0x0D, 0x08, 123, 0, 0, 115, 0, 45, 0]);
+    const expected = Buffer.from([0x0D, 0x09, 123, 0, 0, 115, 0, 219, 3, 45, 0]);
     expect(updateValueCallback).toHaveBeenCalledWith(expected);
 });

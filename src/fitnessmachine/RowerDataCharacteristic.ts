@@ -45,7 +45,7 @@ export class RowerDataCharacteristic extends Characteristic {
         // 0   6 .. Average Power (1 if present)
         // 0   7 .. Resistance Level (1 if present)
         flags.writeUInt8(0x0D || 0);
-        // 0   8 .. Expended Energy (1 if present)
+        // 1   8 .. Expended Energy (1 if present)
         // 0   9 .. Heart Rate (1 if present)
         // 0  10 .. Metabolic Equivalent (1 if present)
         // 1  11 .. Elapsed Time in seconds (1 if present)
@@ -53,7 +53,7 @@ export class RowerDataCharacteristic extends Characteristic {
         // 0  13 .. Reserved for future use
         // 0  14 .. Reserved for future use
         // 0  15 .. Reserved for future use
-        flags.writeUInt8(0x08 || 0, 1);
+        flags.writeUInt8(0x09 || 0, 1);
 
         const totalDistance = Buffer.alloc(3);
         totalDistance.writeUInt8((capture.distance || 0) & 255)
@@ -62,9 +62,12 @@ export class RowerDataCharacteristic extends Characteristic {
         const instantaneousPace = Buffer.alloc(2);
         instantaneousPace.writeUInt16LE(capture.time500mSplit || 0)
 
+        const energyPerHour = Buffer.alloc(2);
+        energyPerHour.writeUInt16LE(capture.caloriesPerHour || 0)
+
         const elapsedTime = Buffer.alloc(2);
         elapsedTime.writeUInt16LE(capture.elapsedTime || 0)
 
-        this.updateValueCallback && this.updateValueCallback(Buffer.concat([flags, totalDistance, instantaneousPace, elapsedTime]));
+        this.updateValueCallback && this.updateValueCallback(Buffer.concat([flags, totalDistance, instantaneousPace, energyPerHour, elapsedTime]));
     }
 }
