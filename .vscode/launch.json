@@ -9,6 +9,7 @@
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}/src/App.ts",
+            "args": ["--port", "/dev/tty.usbserial-A6029KI0", "--name", "FDF Rower Test"],
             "outFiles": [
                 "${workspaceFolder}/build/**/*.js"
             ],

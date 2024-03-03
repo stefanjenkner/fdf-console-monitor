@@ -2,7 +2,10 @@
   "name": "fdf-monitor",
   "version": "0.1.0",
   "description": "FDF Rowing Monitor",
-  "main": "app/app.js",
+  "main": "./build/App.js",
+  "bin": {
+    "fdf-console-monitor": "./build/App.js"
+  },
   "type": "commonjs",
   "scripts": {
     "build": "rimraf ./build && tsc",

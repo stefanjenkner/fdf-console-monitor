@@ -1,3 +1,6 @@
+#!/usr/bin/env node
+
+import { parseArgs } from 'node:util';
 import log from 'loglevel'
 import { FitnessMachine } from './fitnessmachine/FitnessMachine'
 import { Monitor } from './monitor/Monitor';
@@ -5,8 +8,21 @@ import { Capture } from './monitor/Capture';
 
 log.setLevel('DEBUG')
 
-const fitnessMachine = new FitnessMachine({ name: "FDF Rower" })
-const monitor = new Monitor({ port: "/dev/tty.usbserial-A6029KI0" }, (captur: Capture) => {
+const options = {
+  name: {
+    type: "string",
+    short: "n"
+  },
+  port: {
+    type: "string",
+    short: "p"
+  }
+} as const
+
+const { values: { name, port } } = parseArgs({ options });
+
+const fitnessMachine = new FitnessMachine({ name: name ? name : "FDF Rower" })
+const monitor = new Monitor({ port: port ? port : "/dev/ttyS0" }, (captur: Capture) => {
   fitnessMachine.onCapture(captur);
 });
 monitor.connect((error?) => {
