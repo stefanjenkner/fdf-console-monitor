@@ -7,8 +7,8 @@ export class Parser {
         const totalMinutes =  Number.parseInt(message.substring(3, 5));
         const totalSeconds =  Number.parseInt(message.substring(5, 7));
         const distance = Number.parseInt(message.substring(7, 12));
-        // let toFiveHundredMetersMinutes = message.substring(13, 15);
-        // let toFiveHundredMetersSeconds = message.substring(15, 17);
+        const to500mMinutes = Number.parseInt(message.substring(13, 15));
+        const to500mSeconds = Number.parseInt(message.substring(15, 17));
         const strokesPerMinute = Number.parseInt(message.substring(17, 20));
         const watt = Number.parseInt(message.substring(20, 23));
         const caloriesPerHour = Number.parseInt(message.substring(23, 27));
@@ -16,6 +16,7 @@ export class Parser {
 
         return {
             elapsedTime: totalMinutes*60 + totalSeconds,
+            time500mSplit: to500mMinutes*60 + to500mSeconds,
             distance: distance,
             level: level,
             watt: watt,
