@@ -5,6 +5,7 @@ import log from 'loglevel'
 import { FitnessMachine } from './fitnessmachine/FitnessMachine'
 import { Monitor } from './monitor/Monitor';
 import { Capture } from './monitor/Capture';
+import { Data } from './monitor/Data';
 
 log.setLevel('DEBUG')
 
@@ -22,8 +23,8 @@ const options = {
 const { values: { name, port } } = parseArgs({ options });
 
 const fitnessMachine = new FitnessMachine({ name: name ? name : 'FDF Rower' })
-const monitor = new Monitor({ port: port ? port : '/dev/ttyUSB0' }, (captur: Capture) => {
-    fitnessMachine.onCapture(captur);
+const monitor = new Monitor({ port: port ? port : '/dev/ttyUSB0' }, (data: Data) => {
+    fitnessMachine.onData(data);
 });
 monitor.connect((error?) => {
     if (error) {
