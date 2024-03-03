@@ -19,6 +19,6 @@ test("call updateValueCallback", () => {
     rowerDataCharacteristik.onCapture(capture);
 
     // verify
-    const expected = Buffer.from([0x07, 0x08, 123, 0, 0, 45, 0]);
+    const expected = Buffer.from([0x05, 0x08, 123, 0, 0, 45, 0]);
     expect(updateValueCallback).toHaveBeenCalledWith(expected);
 });
