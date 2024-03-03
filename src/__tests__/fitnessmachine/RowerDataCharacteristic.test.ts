@@ -10,7 +10,7 @@ test('call updateValueCallback', () => {
         elapsedTime: 45,
         caloriesPerHour: 987,
         level: 0,
-        watt: 0
+        watt: 105
     }
     const updateValueCallback = jest.fn();
     const rowerDataCharacteristik = new RowerDataCharacteristic()
@@ -20,6 +20,6 @@ test('call updateValueCallback', () => {
     rowerDataCharacteristik.onCapture(capture);
 
     // verify
-    const expected = Buffer.from([0x0D, 0x09, 123, 0, 0, 115, 0, 219, 3, 45, 0]);
+    const expected = Buffer.from([0x2D, 0x09, 123, 0, 0, 115, 0, 105, 0, 219, 3, 45, 0]);
     expect(updateValueCallback).toHaveBeenCalledWith(expected);
 });
