@@ -2,11 +2,16 @@
     "root": true,
     "parser": "@typescript-eslint/parser",
     "plugins": [
-      "@typescript-eslint"
+      "@typescript-eslint",
+      "@stylistic/ts",
     ],
     "extends": [
       "eslint:recommended",
       "plugin:@typescript-eslint/eslint-recommended",
-      "plugin:@typescript-eslint/recommended"
-    ]
+      "plugin:@typescript-eslint/recommended",
+    ],
+    "rules": {
+      "@stylistic/ts/indent": ["error", 4],
+      "@stylistic/ts/quotes": ["error", "single"],
+    }
   }

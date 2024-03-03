@@ -1,4 +1,4 @@
-import { Capture } from "./Capture";
+import { Capture } from './Capture';
 
 export class Parser {
 

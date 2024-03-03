@@ -1,6 +1,6 @@
-import { RowerDataCharacteristic } from "../../fitnessmachine/RowerDataCharacteristic";
+import { RowerDataCharacteristic } from '../../fitnessmachine/RowerDataCharacteristic';
 
-test("call updateValueCallback", () => {
+test('call updateValueCallback', () => {
 
     // setup
     const capture = {

@@ -14,10 +14,10 @@ export class RowerDataCharacteristic extends Characteristic {
             uuid: '2AD1',
             value: null,
             properties: ['notify']
-          });
-          this.updateValueCallback = null;
-          this.maxValueSize = null;
-        }
+        });
+        this.updateValueCallback = null;
+        this.maxValueSize = null;
+    }
 
     onSubscribe(maxValueSize: number, updateValueCallback: (data: Buffer) => void): void {
 
@@ -28,7 +28,7 @@ export class RowerDataCharacteristic extends Characteristic {
 
     onUnsubscribe(): void {
 
-        log.debug(`RowerDataCharacteristic onUnsubscribe`)
+        log.debug('RowerDataCharacteristic onUnsubscribe')
         this.updateValueCallback = null;
         this.maxValueSize = null;  
     }

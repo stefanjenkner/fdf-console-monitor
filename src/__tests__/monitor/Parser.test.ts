@@ -1,12 +1,12 @@
-import { Parser } from "../../monitor/Parser";
+import { Parser } from '../../monitor/Parser';
 
-test("parsing raw data to captur object", () => {
+test('parsing raw data to captur object', () => {
 
     // setup
     const parser = new Parser();
 
     // execute
-    const capture = parser.parse("A8000060001410243028105065904")
+    const capture = parser.parse('A8000060001410243028105065904')
 
     // verify
     expect(capture.elapsedTime).toBe(6);

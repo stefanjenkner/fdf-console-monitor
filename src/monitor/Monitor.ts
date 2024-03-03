@@ -37,16 +37,19 @@ export class Monitor {
 
             port.write('C\n');
             const parser = port.pipe(new ReadlineParser());
-            parser.on('data', (data) => {
+            const captureParser = new Parser();
+            parser.on('data', (data : string) => {
 
                 log.debug(`Received: ${data}`);
-                
-                const captureParser = new Parser();
-                this.onDataCallback && this.onDataCallback(captureParser.parse(data));
+
+                if (data.startsWith('A')) {
+                    this.onDataCallback && this.onDataCallback(captureParser.parse(data));
+                } else if (data.startsWith('W')) {
+                    port.write('K\n')
+                }
             });
 
-
-            log.info("Connection established.");
+            log.info('Connection established.');
             this.serialPort = port;
             callback && callback(null)
         })
@@ -69,7 +72,7 @@ export class Monitor {
             }
         }
 
-        log.info("Connection closed.");
+        log.info('Connection closed.');
         callback && callback(null);
     }
 }

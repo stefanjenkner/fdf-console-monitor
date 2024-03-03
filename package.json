@@ -22,6 +22,8 @@
     "serialport": "^12.0.0"
   },
   "devDependencies": {
+    "@stylistic/eslint-plugin": "^1.6.3",
+    "@stylistic/eslint-plugin-ts": "^1.6.3",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.11.20",
     "@typescript-eslint/eslint-plugin": "^7.1.0",
