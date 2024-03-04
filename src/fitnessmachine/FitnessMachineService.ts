@@ -1,7 +1,7 @@
-import { PrimaryService } from '@abandonware/bleno';
-import { RowerFeatureCharacteristic } from './RowerFeatureCharacteristic';
-import { RowerDataCharacteristic } from './RowerDataCharacteristic';
 import { Data } from '../monitor/Data';
+import { PrimaryService } from '@abandonware/bleno';
+import { RowerDataCharacteristic } from './RowerDataCharacteristic';
+import { RowerFeatureCharacteristic } from './RowerFeatureCharacteristic';
 
 const rowerFeatureCharacteristic = new RowerFeatureCharacteristic();
 const rowerDataCharacteristic = new RowerDataCharacteristic();

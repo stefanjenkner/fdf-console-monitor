@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
-import { parseArgs } from 'node:util';
-import log from 'loglevel'
+import { Data } from './monitor/Data';
 import { FitnessMachine } from './fitnessmachine/FitnessMachine'
 import { Monitor } from './monitor/Monitor';
-import { Data } from './monitor/Data';
+import log from 'loglevel'
+import { parseArgs } from 'node:util';
 
 log.setLevel('DEBUG')
 

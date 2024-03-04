@@ -1,5 +1,5 @@
-import log from 'loglevel'
 import { Characteristic } from '@abandonware/bleno'
+import log from 'loglevel'
 
 type ReadRequestCallback = (result: number, data?: Buffer) => void;
 

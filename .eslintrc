@@ -11,6 +11,7 @@
       "plugin:@typescript-eslint/recommended",
     ],
     "rules": {
+      "sort-imports": ["error"],
       "@stylistic/ts/indent": ["error", 4],
       "@stylistic/ts/quotes": ["error", "single"],
     }

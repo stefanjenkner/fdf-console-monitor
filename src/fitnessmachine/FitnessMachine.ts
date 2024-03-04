@@ -1,7 +1,7 @@
-import log from 'loglevel'
-import bleno from '@abandonware/bleno'
-import { FitnessMachineService } from './FitnessMachineService'
 import { Data } from '../monitor/Data';
+import { FitnessMachineService } from './FitnessMachineService'
+import bleno from '@abandonware/bleno'
+import log from 'loglevel'
 
 interface FitnessMachineOptions {
     name: string

@@ -1,9 +1,8 @@
-import log from 'loglevel'
-
-import { SerialPort } from 'serialport'
-import { ReadlineParser } from '@serialport/parser-readline'
-import { Parser } from './Parser';
 import { Data } from './Data';
+import { Parser } from './Parser';
+import { ReadlineParser } from '@serialport/parser-readline'
+import { SerialPort } from 'serialport'
+import log from 'loglevel'
 
 interface MonitorOptions {
     port: string

@@ -1,6 +1,6 @@
-import log from 'loglevel'
 import { Characteristic } from '@abandonware/bleno'
 import { Data } from '../monitor/Data';
+import log from 'loglevel'
 
 type UpdateValueCallback = (data: Buffer) => void;
 
