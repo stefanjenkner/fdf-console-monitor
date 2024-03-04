@@ -4,7 +4,6 @@ import { parseArgs } from 'node:util';
 import log from 'loglevel'
 import { FitnessMachine } from './fitnessmachine/FitnessMachine'
 import { Monitor } from './monitor/Monitor';
-import { Capture } from './monitor/Capture';
 import { Data } from './monitor/Data';
 
 log.setLevel('DEBUG')

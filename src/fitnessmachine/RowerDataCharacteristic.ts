@@ -44,7 +44,7 @@ export class RowerDataCharacteristic extends Characteristic {
         // ?   5 .. Instantaneous Power (1 if present)
         // 0   6 .. Average Power (1 if present)
         // 0   7 .. Resistance Level (1 if present)
-        var featuresOctet1 = 0x05;
+        let featuresOctet1 = 0x05;
         // ?   8 .. Expended Energy (1 if present)
         // 0   9 .. Heart Rate (1 if present)
         // 0  10 .. Metabolic Equivalent (1 if present)
@@ -53,7 +53,7 @@ export class RowerDataCharacteristic extends Characteristic {
         // 0  13 .. Reserved for future use
         // 0  14 .. Reserved for future use
         // 0  15 .. Reserved for future use
-        var featuresOctet2 = 0x08;
+        const featuresOctet2 = 0x08;
 
         // Bit 0 - Stroke rate and Stroke count (1 if NOT present)
         if (data.strokesPerMinute && data.strokes) {
@@ -96,10 +96,12 @@ export class RowerDataCharacteristic extends Characteristic {
         // const energyPerMinute = Buffer.alloc(1);
         // energyPerMinute.writeUInt8(0)
 
+        // Bit 11 - Elapsed Time in seconds
         const elapsedTime = Buffer.alloc(2);
         elapsedTime.writeUInt16LE(data.elapsedTime || 0)
         featureData.push(elapsedTime);
 
+        // Feature flags
         const featureFlags = Buffer.alloc(2);
         featureFlags.writeUInt8(featuresOctet1 || 0);
         featureFlags.writeUInt8(featuresOctet2 || 0, 1);

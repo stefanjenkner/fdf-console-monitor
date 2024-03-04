@@ -54,6 +54,6 @@ test('call updateValueCallback when paused or stopped', () => {
     rowerDataCharacteristik.onData(data);
 
     // verify
-    const expected = Buffer.from([0x5, 0x08, 123, 0, 0, 45, 0]);
+    const expected = Buffer.from([0x05, 0x08, 123, 0, 0, 45, 0]);
     expect(updateValueCallback).toHaveBeenCalledWith(expected);
 });
