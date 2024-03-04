@@ -37,6 +37,7 @@ export class Monitor {
 
             port.write('C\n');
             const parser = port.pipe(new ReadlineParser());
+            let strokes = 0;
             const captureParser = new Parser();
             parser.on('data', (rawData : string) => {
 
@@ -45,10 +46,12 @@ export class Monitor {
                 if (rawData.startsWith('A')) {
                     const capture = captureParser.parse(rawData);
                     const isPausedOrStopped = capture.strokesPerMinute === 0;
+                    if (!isPausedOrStopped) strokes++;
                     const data : Data = {
                         elapsedTime: capture.elapsedTime,
                         distance: capture.distance,
-                        strokesPerMinute: capture.strokesPerMinute,
+                        strokes: isPausedOrStopped ? null : strokes,
+                        strokesPerMinute: isPausedOrStopped ? null : capture.strokesPerMinute,
                         level: capture.level,
                         time500mSplit: isPausedOrStopped ? null : capture.time500m,
                         time500mAverage: isPausedOrStopped ? capture.time500m : null,
@@ -60,6 +63,8 @@ export class Monitor {
                     this.onDataCallback && this.onDataCallback(data);
                 } else if (rawData.startsWith('W')) {
                     port.write('K\n')
+                } else if (rawData.startsWith('R')) {
+                    strokes = 0;
                 }
             });
 

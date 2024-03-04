@@ -36,7 +36,7 @@ export class RowerDataCharacteristic extends Characteristic {
     onData(data: Data): void {
 
         const featureData: Array<Buffer> = []
-        // 1   0 .. Stroke rate and Stroke count (1 if NOT present)
+        // ?   0 .. Stroke rate and Stroke count (1 if NOT present)
         // 0   1 .. Average Stroke rate (1 if present)
         // 1   2 .. Total Distance present
         // ?   3 .. Instantaneous Pace (1 if present)
@@ -55,6 +55,18 @@ export class RowerDataCharacteristic extends Characteristic {
         // 0  15 .. Reserved for future use
         var featuresOctet2 = 0x08;
 
+        // Bit 0 - Stroke rate and Stroke count (1 if NOT present)
+        if (data.strokesPerMinute && data.strokes) {
+            const stokeRate = Buffer.alloc(1);
+            stokeRate.writeUInt8(Math.round(data.strokesPerMinute * 2) || 0);
+            const strokeCount = Buffer.alloc(2);
+            strokeCount.writeUInt16LE(data.strokes || 0)
+            featuresOctet1 &= ~1;
+            featureData.push(stokeRate);
+            featureData.push(strokeCount);
+        }
+
+        // Bit 2 - Total Distance
         const totalDistance = Buffer.alloc(3);
         totalDistance.writeUInt8((data.distance || 0) & 255)
         totalDistance.writeUInt16LE((data.distance || 0) >> 8, 1)
