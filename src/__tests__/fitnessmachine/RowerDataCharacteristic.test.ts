@@ -1,5 +1,6 @@
 import { Data } from '../../monitor/Data';
 import { RowerDataCharacteristic } from '../../fitnessmachine/RowerDataCharacteristic';
+jest.mock('../../fitnessmachine/RowerDataCharacteristic');
 
 test('call updateValueCallback when active', () => {
 
