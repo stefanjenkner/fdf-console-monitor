@@ -1,6 +1,5 @@
 import { Data } from '../../monitor/Data';
 import { RowerDataCharacteristic } from '../../fitnessmachine/RowerDataCharacteristic';
-jest.mock('../../fitnessmachine/RowerDataCharacteristic');
 
 test('call updateValueCallback when active', () => {
 
@@ -29,7 +28,6 @@ test('call updateValueCallback when active', () => {
     const expected = Buffer.from([0x2C, 0x08, 62, 23, 0, 123, 0, 0, 115, 0, 105, 0, 45, 0]);
     expect(updateValueCallback).toHaveBeenCalledWith(expected);
 });
-
 
 test('call updateValueCallback when paused or stopped', () => {
 
