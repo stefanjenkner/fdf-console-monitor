@@ -29,7 +29,6 @@ test('call updateValueCallback when active', () => {
     expect(updateValueCallback).toHaveBeenCalledWith(expected);
 });
 
-
 test('call updateValueCallback when paused or stopped', () => {
 
     // setup
