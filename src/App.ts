@@ -25,7 +25,7 @@ const fitnessMachine = new FitnessMachine({ name: name ? name : defaultName })
 const monitor = new Monitor({ port: port ? port : defaultPort });
 monitor.on('connect', (error?) => {
     if (error) {
-        shutdown(1);
+        process.exit(1);
         return;
     }
     fitnessMachine.start();
@@ -35,7 +35,7 @@ monitor.on('disconnect', (error?) => {
         shutdown(1);
         return;
     }
-    fitnessMachine.stop();
+    shutdown(0);
 });
 monitor.on('data', (data) => fitnessMachine.onData(data));
 
