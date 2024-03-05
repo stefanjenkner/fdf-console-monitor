@@ -4,6 +4,7 @@ import { FitnessMachine } from './fitnessmachine/FitnessMachine'
 import { Monitor } from './monitor/Monitor';
 import log from 'loglevel'
 import { parseArgs } from 'node:util';
+import process from 'node:process';
 
 const defaultPort = '/dev/ttyUSB0';
 const defaultName = 'FDF Rower';
@@ -25,31 +26,21 @@ const fitnessMachine = new FitnessMachine({ name: name ? name : defaultName })
 const monitor = new Monitor({ port: port ? port : defaultPort });
 monitor.on('connect', (error?) => {
     if (error) {
-        process.exit(1);
-        return;
+        process.exitCode = 1;
+    } else {
+        fitnessMachine.start();
     }
-    fitnessMachine.start();
 });
 monitor.on('disconnect', (error?) => {
-    if (error) {
-        shutdown(1);
-        return;
-    }
-    shutdown(0);
+    fitnessMachine.stop();
+    process.exitCode = error ? 1 : 0
 });
 monitor.on('data', (data) => fitnessMachine.onData(data));
 
 process.on('SIGINT', function () {
-    shutdown(0);
+    monitor.disconnect();
+    fitnessMachine.stop();
+    process.exitCode = 0
 });
 
 monitor.connect();
-
-function shutdown(exitCode : number) {
-    monitor.disconnect();
-    fitnessMachine.stop();
-    setTimeout(() => {
-        log.info('Bye Bye');
-        process.exit(exitCode);
-    }, 3000);
-}
