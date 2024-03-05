@@ -13,8 +13,8 @@ jobs:
         with:
             node-version: '20.x'
       - run: |
-          sudo apt update && sudo apt install -y libbluetooth-dev libudev-dev
+          sudo apt install -y bluetooth bluez libbluetooth-dev libudev-dev libusb-1.0-0-dev
           npm ci
       - run: npm run build --if-present
-      - run: npm run test
       - run: npm run lint
+      - run: npm run test
