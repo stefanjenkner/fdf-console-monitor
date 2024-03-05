@@ -1,36 +1,39 @@
 import { Data } from './Data';
+import EventEmitter from 'events';
 import { Parser } from './Parser';
 import { ReadlineParser } from '@serialport/parser-readline'
 import { SerialPort } from 'serialport'
+import TypedEmitter from 'typed-emitter'
 import log from 'loglevel'
 
 interface MonitorOptions {
     port: string
 }
 
-export type ConnectCallback = (err: Error | null) => void;
-export type DisconnectCallback = (err: Error | null) => void;
-export type OnDataCallback = (data: Data) => void;
+type MonitorEvents = {
+    'connect': (err: Error | null) => void,
+    'disconnect': (err: Error | null) => void,
+    'data': (data: Data) => void
+}
 
-export class Monitor {
+export class Monitor extends(EventEmitter as new () => TypedEmitter<MonitorEvents>) {
 
     serialPort?: SerialPort;
     options: MonitorOptions;
-    onDataCallback: OnDataCallback;
 
-    constructor(options: MonitorOptions, onDataCallback: OnDataCallback) {
+    constructor(options: MonitorOptions) {
+        super();
         this.options = options;
-        this.onDataCallback = onDataCallback;
     }
 
-    connect(callback?: ConnectCallback): void {
+    connect(): void {
         const port = new SerialPort({
             path: this.options.port,
             baudRate: 9600,
         }, (error?) => {
             if (error) {
                 log.error(`Error opening serial port: ${error.message}`);
-                callback && callback(error || null);
+                this.emit('connect', error);
                 return;
             }
 
@@ -59,7 +62,7 @@ export class Monitor {
                         caloriesPerHour: isPausedOrStopped ? null : capture.cals,
                         caloriesTotal: isPausedOrStopped ? capture.cals : null,
                     }
-                    this.onDataCallback && this.onDataCallback(data);
+                    this.emit('data', data);
                 } else if (rawData.startsWith('W')) {
                     port.write('K\n')
                 } else if (rawData.startsWith('R')) {
@@ -69,11 +72,11 @@ export class Monitor {
 
             log.info('Connection established.');
             this.serialPort = port;
-            callback && callback(null)
+            this.emit('connect', null);
         })
     }
 
-    disconnect(callback?: DisconnectCallback): void {
+    disconnect(): void {
 
         if (this.serialPort) {
             this.serialPort.removeAllListeners();
@@ -83,7 +86,7 @@ export class Monitor {
                 this.serialPort.close((error) => {
                     if (error) {
                         log.error(`Disconnect error: ${error.message}`);
-                        callback && callback(error || null);
+                        this.emit('disconnect', error);
                         return;
                     }
                 });
@@ -91,6 +94,6 @@ export class Monitor {
         }
 
         log.info('Connection closed.');
-        callback && callback(null);
+        this.emit('disconnect', null);
     }
 }

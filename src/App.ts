@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
-import { Data } from './monitor/Data';
 import { FitnessMachine } from './fitnessmachine/FitnessMachine'
 import { Monitor } from './monitor/Monitor';
 import log from 'loglevel'
 import { parseArgs } from 'node:util';
 
-log.setLevel('DEBUG')
+const defaultPort = '/dev/ttyUSB0';
+const defaultName = 'FDF Rower';
 
 const options = {
     name: {
@@ -19,30 +19,37 @@ const options = {
     }
 } as const
 
+log.setLevel('DEBUG')
 const { values: { name, port } } = parseArgs({ options });
-
-const fitnessMachine = new FitnessMachine({ name: name ? name : 'FDF Rower' })
-const monitor = new Monitor({ port: port ? port : '/dev/ttyUSB0' }, (data: Data) => {
-    fitnessMachine.onData(data);
-});
-monitor.connect((error?) => {
+const fitnessMachine = new FitnessMachine({ name: name ? name : defaultName })
+const monitor = new Monitor({ port: port ? port : defaultPort });
+monitor.on('connect', (error?) => {
     if (error) {
-        process.exit(1);
+        shutdown(1);
+        return;
     }
     fitnessMachine.start();
 });
+monitor.on('disconnect', (error?) => {
+    if (error) {
+        shutdown(1);
+        return;
+    }
+    fitnessMachine.stop();
+});
+monitor.on('data', (data) => fitnessMachine.onData(data));
 
 process.on('SIGINT', function () {
-    let exitCode = 1;
-    monitor.disconnect((error?) => {
-        if (!error) {
-            exitCode = 0;
-        }
-    })
-    fitnessMachine.stop();
+    shutdown(0);
+});
 
+monitor.connect();
+
+function shutdown(exitCode : number) {
+    monitor.disconnect();
+    fitnessMachine.stop();
     setTimeout(() => {
         log.info('Bye Bye');
         process.exit(exitCode);
     }, 3000);
-});
+}
