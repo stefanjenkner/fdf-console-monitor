@@ -38,9 +38,10 @@ monitor.on('disconnect', (error?) => {
 monitor.on('data', (data) => fitnessMachine.onData(data));
 
 process.on('SIGINT', function () {
-    monitor.disconnect();
     fitnessMachine.stop();
-    process.exitCode = 0
+    monitor.disconnect();
+    process.exitCode = 0;
+    process.exit();
 });
 
 monitor.connect();
