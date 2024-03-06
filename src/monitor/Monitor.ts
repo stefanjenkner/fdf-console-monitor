@@ -54,7 +54,8 @@ export class Monitor extends(EventEmitter as new () => TypedEmitter<MonitorEvent
                     }
                     const data : Data = {
                         elapsedTime: capture.elapsedTime,
-                        distance: capture.distance,
+                        distance: isPausedOrStopped ? null : capture.distance,
+                        remainingDistance: isPausedOrStopped ? capture.distance : null,
                         strokes: isPausedOrStopped ? null : strokes,
                         strokesPerMinute: isPausedOrStopped ? null : capture.strokesPerMinute,
                         level: capture.level,

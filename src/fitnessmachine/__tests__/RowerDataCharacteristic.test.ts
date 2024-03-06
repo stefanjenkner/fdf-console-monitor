@@ -8,6 +8,7 @@ test('call updateValueCallback when active', () => {
         strokes: 23,
         strokesPerMinute: 31,
         distance: 123,
+        remainingDistance: null,
         time500mSplit: 115,
         time500mAverage: null,
         elapsedTime: 45,
@@ -35,7 +36,8 @@ test('call updateValueCallback when paused or stopped', () => {
     const data : Data = {
         strokes: 45,
         strokesPerMinute: 0,
-        distance: 123,
+        distance: null,
+        remainingDistance: 877,
         time500mSplit: null,
         time500mAverage: null,
         elapsedTime: 45,
@@ -53,6 +55,6 @@ test('call updateValueCallback when paused or stopped', () => {
     rowerDataCharacteristik.onData(data);
 
     // verify
-    const expected = Buffer.from([0x05, 0x08, 123, 0, 0, 45, 0]);
+    const expected = Buffer.from([0x01, 0x08, 45, 0]);
     expect(updateValueCallback).toHaveBeenCalledWith(expected);
 });

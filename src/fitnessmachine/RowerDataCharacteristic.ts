@@ -37,13 +37,13 @@ export class RowerDataCharacteristic extends Characteristic {
         const featureData: Array<Buffer> = []
         // ?   0 .. Stroke rate and Stroke count (1 if NOT present)
         // 0   1 .. Average Stroke rate (1 if present)
-        // 1   2 .. Total Distance present
+        // ?   2 .. Total Distance present (1 if present)
         // ?   3 .. Instantaneous Pace (1 if present)
         // 0   4 .. Average Pace (1 if present)
         // ?   5 .. Instantaneous Power (1 if present)
         // 0   6 .. Average Power (1 if present)
         // 0   7 .. Resistance Level (1 if present)
-        let featuresOctet1 = 0x05;
+        let featuresOctet1 = 0x01;
         // ?   8 .. Expended Energy (1 if present)
         // 0   9 .. Heart Rate (1 if present)
         // 0  10 .. Metabolic Equivalent (1 if present)
@@ -66,10 +66,13 @@ export class RowerDataCharacteristic extends Characteristic {
         }
 
         // Bit 2 - Total Distance
-        const totalDistance = Buffer.alloc(3);
-        totalDistance.writeUInt8((data.distance || 0) & 255)
-        totalDistance.writeUInt16LE((data.distance || 0) >> 8, 1)
-        featureData.push(totalDistance);
+        if (data.distance) {
+            const totalDistance = Buffer.alloc(3);
+            totalDistance.writeUInt8((data.distance || 0) & 255)
+            totalDistance.writeUInt16LE((data.distance || 0) >> 8, 1)
+            featuresOctet1 |= 4;
+            featureData.push(totalDistance);
+        }
 
         // Bit 3 - Instantaneous Pace
         if (data.time500mSplit) {
