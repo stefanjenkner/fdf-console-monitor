@@ -1,7 +1,6 @@
 import { Characteristic } from '@abandonware/bleno'
+import { ReadRequestCallback } from './ReadRequestCallback';
 import log from 'loglevel'
-
-type ReadRequestCallback = (result: number, data?: Buffer) => void;
 
 export class RowerFeatureCharacteristic extends Characteristic {
 

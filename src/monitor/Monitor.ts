@@ -3,6 +3,7 @@ import EventEmitter from 'events';
 import { Parser } from './Parser';
 import { ReadlineParser } from '@serialport/parser-readline'
 import { SerialPort } from 'serialport'
+import { StatusChange } from './StatusChange';
 import TypedEmitter from 'typed-emitter'
 import log from 'loglevel'
 
@@ -13,7 +14,8 @@ interface MonitorOptions {
 type MonitorEvents = {
     'connect': (err: Error | null) => void,
     'disconnect': (err: Error | null) => void,
-    'data': (data: Data) => void
+    'data': (data: Data) => void,
+    'statusChanged': (statusChange: StatusChange) => void,
 }
 
 export class Monitor extends(EventEmitter as new () => TypedEmitter<MonitorEvents>) {
@@ -40,6 +42,7 @@ export class Monitor extends(EventEmitter as new () => TypedEmitter<MonitorEvent
             port.write('C\n');
             const parser = port.pipe(new ReadlineParser());
             let strokes = 0;
+            let isPausedOrStopped = false;
             const captureParser = new Parser();
             parser.on('data', (rawData : string) => {
 
@@ -47,8 +50,17 @@ export class Monitor extends(EventEmitter as new () => TypedEmitter<MonitorEvent
 
                 if (rawData.startsWith('A')) {
                     const capture = captureParser.parse(rawData);
-                    const isPausedOrStopped = capture.strokesPerMinute === 0;
-                    if (!isPausedOrStopped) strokes++;
+                    if (capture.strokesPerMinute === 0) {
+                        this.emit('statusChanged', StatusChange.PausedOrStopped);
+                        isPausedOrStopped = true;
+                    } else if (isPausedOrStopped) {
+                        this.emit('statusChanged', StatusChange.Resumed);
+                        isPausedOrStopped = false;
+                        strokes++;
+                    } else if (strokes === 0) {
+                        this.emit('statusChanged', StatusChange.Started);
+                        strokes++;
+                    }
                     const data : Data = {
                         elapsedTime: capture.elapsedTime,
                         distance: capture.distance,
@@ -66,6 +78,7 @@ export class Monitor extends(EventEmitter as new () => TypedEmitter<MonitorEvent
                 } else if (rawData.startsWith('W')) {
                     port.write('K\n')
                 } else if (rawData.startsWith('R')) {
+                    this.emit('statusChanged', StatusChange.Reset);
                     strokes = 0;
                 }
             });

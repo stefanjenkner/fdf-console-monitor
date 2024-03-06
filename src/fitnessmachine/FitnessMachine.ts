@@ -1,5 +1,6 @@
 import { Data } from '../monitor/Data';
 import { FitnessMachineService } from './FitnessMachineService'
+import { StatusChange } from '../monitor/StatusChange';
 import bleno from '@abandonware/bleno'
 import log from 'loglevel'
 
@@ -67,7 +68,10 @@ export class FitnessMachine {
     }
 
     onData(data : Data) {
-
         this.fitnessMachineService.onData(data);
+    }
+
+    onStatusChange(statusChange : StatusChange) {
+        this.fitnessMachineService.onStatusChange(statusChange);
     }
 }

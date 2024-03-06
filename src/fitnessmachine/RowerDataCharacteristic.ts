@@ -1,8 +1,7 @@
 import { Characteristic } from '@abandonware/bleno'
 import { Data } from '../monitor/Data';
+import { UpdateValueCallback } from './UpdateValueCallback';
 import log from 'loglevel'
-
-type UpdateValueCallback = (data: Buffer) => void;
 
 export class RowerDataCharacteristic extends Characteristic {
 
@@ -19,7 +18,7 @@ export class RowerDataCharacteristic extends Characteristic {
         this.maxValueSize = null;
     }
 
-    onSubscribe(maxValueSize: number, updateValueCallback: (data: Buffer) => void): void {
+    onSubscribe(maxValueSize: number, updateValueCallback: UpdateValueCallback): void {
 
         log.debug(`RowerDataCharacteristic onSubscribe maxValueSize=${maxValueSize}`)
         this.updateValueCallback = updateValueCallback;
