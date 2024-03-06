@@ -5,23 +5,20 @@ import { RowerDataCharacteristic } from './RowerDataCharacteristic';
 import { RowerFeatureCharacteristic } from './RowerFeatureCharacteristic';
 import { StatusChange } from '../StatusChange';
 
-const rowerFeatureCharacteristic = new RowerFeatureCharacteristic();
-const rowerDataCharacteristic = new RowerDataCharacteristic();
-const fitnessMachineStatusCharacteristic = new FitnessMachineStatusCharacteristic();
-
 export class FitnessMachineService extends PrimaryService {
     
-    rowerDataCharacteristic? : RowerDataCharacteristic | null
-    rowerFeatureCharacteristic? : RowerFeatureCharacteristic | null
-    fitnessMachineStatusCharacteristic?: FitnessMachineStatusCharacteristic | null;
+    rowerDataCharacteristic : RowerDataCharacteristic;
+    fitnessMachineStatusCharacteristic: FitnessMachineStatusCharacteristic;
 
     constructor () {
+        const rowerDataCharacteristic = new RowerDataCharacteristic();
+        const rowerFeatureCharacteristic = new RowerFeatureCharacteristic();
+        const fitnessMachineStatusCharacteristic = new FitnessMachineStatusCharacteristic();
         super({
             uuid: '1826',
             characteristics: [rowerFeatureCharacteristic, rowerDataCharacteristic, fitnessMachineStatusCharacteristic]
         })
         this.rowerDataCharacteristic = rowerDataCharacteristic;
-        this.rowerFeatureCharacteristic = rowerFeatureCharacteristic;
         this.fitnessMachineStatusCharacteristic = fitnessMachineStatusCharacteristic;
     }
 
