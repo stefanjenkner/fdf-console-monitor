@@ -1,12 +1,9 @@
 import { Data } from '../monitor/Data';
+import { FitnessMachineOptions } from './FitnessMachineOptions';
 import { FitnessMachineService } from './FitnessMachineService'
 import { StatusChange } from '../monitor/StatusChange';
 import bleno from '@abandonware/bleno'
 import log from 'loglevel'
-
-interface FitnessMachineOptions {
-    name: string
-}
 
 export class FitnessMachine {
 

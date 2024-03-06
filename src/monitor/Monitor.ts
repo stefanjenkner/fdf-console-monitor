@@ -1,22 +1,13 @@
 import { Data } from './Data';
 import EventEmitter from 'events';
+import { MonitorEvents } from './MonitorEvents';
+import { MonitorOptions } from './MonitorOptions';
 import { Parser } from './Parser';
 import { ReadlineParser } from '@serialport/parser-readline'
 import { SerialPort } from 'serialport'
 import { StatusChange } from './StatusChange';
 import TypedEmitter from 'typed-emitter'
 import log from 'loglevel'
-
-interface MonitorOptions {
-    port: string
-}
-
-type MonitorEvents = {
-    'connect': (err: Error | null) => void,
-    'disconnect': (err: Error | null) => void,
-    'data': (data: Data) => void,
-    'statusChanged': (statusChange: StatusChange) => void,
-}
 
 export class Monitor extends(EventEmitter as new () => TypedEmitter<MonitorEvents>) {
 
@@ -79,6 +70,7 @@ export class Monitor extends(EventEmitter as new () => TypedEmitter<MonitorEvent
                     port.write('K\n')
                 } else if (rawData.startsWith('R')) {
                     this.emit('statusChanged', StatusChange.Reset);
+                    isPausedOrStopped = false;
                     strokes = 0;
                 }
             });
