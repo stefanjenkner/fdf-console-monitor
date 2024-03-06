@@ -1,5 +1,5 @@
 import { Characteristic } from '@abandonware/bleno'
-import { Data } from '../monitor/Data';
+import { Data } from '../Data';
 import { UpdateValueCallback } from './UpdateValueCallback';
 import log from 'loglevel'
 

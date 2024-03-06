@@ -1,5 +1,5 @@
-import { Data } from '../../monitor/Data';
-import { RowerDataCharacteristic } from '../../fitnessmachine/RowerDataCharacteristic';
+import { Data } from '../../Data';
+import { RowerDataCharacteristic } from '../RowerDataCharacteristic';
 
 test('call updateValueCallback when active', () => {
 

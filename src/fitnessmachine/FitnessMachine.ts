@@ -1,7 +1,7 @@
-import { Data } from '../monitor/Data';
+import { Data } from '../Data';
 import { FitnessMachineOptions } from './FitnessMachineOptions';
 import { FitnessMachineService } from './FitnessMachineService'
-import { StatusChange } from '../monitor/StatusChange';
+import { StatusChange } from '../StatusChange';
 import bleno from '@abandonware/bleno'
 import log from 'loglevel'
 

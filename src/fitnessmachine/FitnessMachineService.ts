@@ -1,9 +1,9 @@
-import { Data } from '../monitor/Data';
+import { Data } from '../Data';
 import { FitnessMachineStatusCharacteristic } from './FitnessMachineStatusCharacteristic';
 import { PrimaryService } from '@abandonware/bleno';
 import { RowerDataCharacteristic } from './RowerDataCharacteristic';
 import { RowerFeatureCharacteristic } from './RowerFeatureCharacteristic';
-import { StatusChange } from '../monitor/StatusChange';
+import { StatusChange } from '../StatusChange';
 
 const rowerFeatureCharacteristic = new RowerFeatureCharacteristic();
 const rowerDataCharacteristic = new RowerDataCharacteristic();

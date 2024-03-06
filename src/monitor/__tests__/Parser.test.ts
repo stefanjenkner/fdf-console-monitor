@@ -1,4 +1,4 @@
-import { Parser } from '../../monitor/Parser';
+import { Parser } from '../Parser';
 
 test('parsing raw data to captur object', () => {
 

@@ -1,11 +1,11 @@
-import { Data } from './Data';
+import { Data } from '../Data';
 import EventEmitter from 'events';
 import { MonitorEvents } from './MonitorEvents';
 import { MonitorOptions } from './MonitorOptions';
 import { Parser } from './Parser';
 import { ReadlineParser } from '@serialport/parser-readline'
 import { SerialPort } from 'serialport'
-import { StatusChange } from './StatusChange';
+import { StatusChange } from '../StatusChange';
 import TypedEmitter from 'typed-emitter'
 import log from 'loglevel'
 

@@ -1,5 +1,5 @@
 import { Characteristic } from '@abandonware/bleno'
-import { StatusChange } from '../monitor/StatusChange';
+import { StatusChange } from '../StatusChange';
 import { UpdateValueCallback } from './UpdateValueCallback';
 import log from 'loglevel'
 

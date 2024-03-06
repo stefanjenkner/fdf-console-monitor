@@ -1,5 +1,5 @@
-import { Data } from './Data';
-import { StatusChange } from './StatusChange';
+import { Data } from '../Data';
+import { StatusChange } from '../StatusChange';
 
 export type MonitorEvents = {
     'connect': (err: Error | null) => void;

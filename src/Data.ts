@@ -1,5 +1,4 @@
 export type Data = {
-
     elapsedTime: number;
     distance: number;
     time500mSplit: number | null;
