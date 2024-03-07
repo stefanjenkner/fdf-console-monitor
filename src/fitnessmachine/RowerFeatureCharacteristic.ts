@@ -1,6 +1,6 @@
-import { Characteristic } from '@abandonware/bleno'
+import { Characteristic } from '@abandonware/bleno';
 import { ReadRequestCallback } from './ReadRequestCallback';
-import log from 'loglevel'
+import log from 'loglevel';
 
 export class RowerFeatureCharacteristic extends Characteristic {
 
@@ -9,7 +9,7 @@ export class RowerFeatureCharacteristic extends Characteristic {
             uuid: '2ACC',
             properties: ['read'],
             value: null
-        })
+        });
     }
 
     onReadRequest(offset: number, callback: ReadRequestCallback): void {

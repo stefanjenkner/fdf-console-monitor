@@ -11,4 +11,4 @@ export type Data = {
     caloriesPerHour: number | null;
     caloriesTotal: number | null;
     level: number;
-}
+};

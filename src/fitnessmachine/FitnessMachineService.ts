@@ -17,7 +17,7 @@ export class FitnessMachineService extends PrimaryService {
         super({
             uuid: '1826',
             characteristics: [rowerFeatureCharacteristic, rowerDataCharacteristic, fitnessMachineStatusCharacteristic]
-        })
+        });
         this.rowerDataCharacteristic = rowerDataCharacteristic;
         this.fitnessMachineStatusCharacteristic = fitnessMachineStatusCharacteristic;
     }
