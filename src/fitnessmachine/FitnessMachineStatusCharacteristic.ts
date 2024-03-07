@@ -1,7 +1,7 @@
-import { Characteristic } from '@abandonware/bleno'
+import { Characteristic } from '@abandonware/bleno';
 import { StatusChange } from '../StatusChange';
 import { UpdateValueCallback } from './UpdateValueCallback';
-import log from 'loglevel'
+import log from 'loglevel';
 
 export class FitnessMachineStatusCharacteristic extends Characteristic {
 
@@ -17,13 +17,13 @@ export class FitnessMachineStatusCharacteristic extends Characteristic {
     }
 
     onSubscribe(maxValueSize: number, updateValueCallback: UpdateValueCallback): void {
-        log.debug(`FitnessMachineStatusCharacteristic onSubscribe maxValueSize=${maxValueSize}`)
+        log.debug(`FitnessMachineStatusCharacteristic onSubscribe maxValueSize=${maxValueSize}`);
         this.updateValueCallback = updateValueCallback;
         this.maxValueSize = maxValueSize;
     }
 
     onUnsubscribe(): void {
-        log.debug('FitnessMachineStatusCharacteristic onUnsubscribe')
+        log.debug('FitnessMachineStatusCharacteristic onUnsubscribe');
         this.updateValueCallback = null;
         this.maxValueSize = null;
     }
@@ -45,7 +45,7 @@ export class FitnessMachineStatusCharacteristic extends Characteristic {
                 result.writeUInt8(0x01, 0);
                 break;
             default:
-                log.warn(`Unsupported status change: ${statusChange}`)
+                log.warn(`Unsupported status change: ${statusChange}`);
                 return;
         }
         this.updateValueCallback && this.updateValueCallback(result);

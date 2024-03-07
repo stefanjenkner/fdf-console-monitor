@@ -1,7 +1,7 @@
-import { Characteristic } from '@abandonware/bleno'
+import { Characteristic } from '@abandonware/bleno';
 import { Data } from '../Data';
 import { UpdateValueCallback } from './UpdateValueCallback';
-import log from 'loglevel'
+import log from 'loglevel';
 
 export class RowerDataCharacteristic extends Characteristic {
 
@@ -20,21 +20,21 @@ export class RowerDataCharacteristic extends Characteristic {
 
     onSubscribe(maxValueSize: number, updateValueCallback: UpdateValueCallback): void {
 
-        log.debug(`RowerDataCharacteristic onSubscribe maxValueSize=${maxValueSize}`)
+        log.debug(`RowerDataCharacteristic onSubscribe maxValueSize=${maxValueSize}`);
         this.updateValueCallback = updateValueCallback;
         this.maxValueSize = maxValueSize;
     }
 
     onUnsubscribe(): void {
 
-        log.debug('RowerDataCharacteristic onUnsubscribe')
+        log.debug('RowerDataCharacteristic onUnsubscribe');
         this.updateValueCallback = null;
         this.maxValueSize = null;
     }
 
     onData(data: Data): void {
 
-        const featureData: Array<Buffer> = []
+        const featureData: Array<Buffer> = [];
         // ?   0 .. Stroke rate and Stroke count (1 if NOT present)
         // 0   1 .. Average Stroke rate (1 if present)
         // ?   2 .. Total Distance present (1 if present)
@@ -59,7 +59,7 @@ export class RowerDataCharacteristic extends Characteristic {
             const stokeRate = Buffer.alloc(1);
             stokeRate.writeUInt8(Math.round(data.strokesPerMinute * 2) || 0);
             const strokeCount = Buffer.alloc(2);
-            strokeCount.writeUInt16LE(data.strokes || 0)
+            strokeCount.writeUInt16LE(data.strokes || 0);
             featuresOctet1 &= ~1;
             featureData.push(stokeRate);
             featureData.push(strokeCount);
@@ -68,8 +68,8 @@ export class RowerDataCharacteristic extends Characteristic {
         // Bit 2 - Total Distance
         if (data.distance) {
             const totalDistance = Buffer.alloc(3);
-            totalDistance.writeUInt8((data.distance || 0) & 255)
-            totalDistance.writeUInt16LE((data.distance || 0) >> 8, 1)
+            totalDistance.writeUInt8((data.distance || 0) & 255);
+            totalDistance.writeUInt16LE((data.distance || 0) >> 8, 1);
             featuresOctet1 |= 4;
             featureData.push(totalDistance);
         }
@@ -77,7 +77,7 @@ export class RowerDataCharacteristic extends Characteristic {
         // Bit 3 - Instantaneous Pace
         if (data.time500mSplit) {
             const instantaneousPace = Buffer.alloc(2);
-            instantaneousPace.writeUInt16LE(data.time500mSplit || 0)
+            instantaneousPace.writeUInt16LE(data.time500mSplit || 0);
             featuresOctet1 |= 8;
             featureData.push(instantaneousPace);
         }
@@ -85,7 +85,7 @@ export class RowerDataCharacteristic extends Characteristic {
         // Bit 5 - Instantaneous Power
         if (data.wattsPreviousStroke) {
             const instantaneousPower = Buffer.alloc(2);
-            instantaneousPower.writeUInt16LE(data.wattsPreviousStroke || 0)
+            instantaneousPower.writeUInt16LE(data.wattsPreviousStroke || 0);
             featuresOctet1 |= 32;
             featureData.push(instantaneousPower);
         }
@@ -100,7 +100,7 @@ export class RowerDataCharacteristic extends Characteristic {
 
         // Bit 11 - Elapsed Time in seconds
         const elapsedTime = Buffer.alloc(2);
-        elapsedTime.writeUInt16LE(data.elapsedTime || 0)
+        elapsedTime.writeUInt16LE(data.elapsedTime || 0);
         featureData.push(elapsedTime);
 
         // Feature flags
