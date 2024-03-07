@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-import { FitnessMachine } from './fitnessmachine/FitnessMachine'
+import { FitnessMachine } from './fitnessmachine/FitnessMachine';
 import { Monitor } from './monitor/Monitor';
-import log from 'loglevel'
+import log from 'loglevel';
 import { parseArgs } from 'node:util';
 import process from 'node:process';
 
@@ -18,11 +18,11 @@ const options = {
         type: 'string',
         short: 'p'
     }
-} as const
+} as const;
 
-log.setLevel('DEBUG')
+log.setLevel('DEBUG');
 const { values: { name, port } } = parseArgs({ options });
-const fitnessMachine = new FitnessMachine({ name: name ? name : defaultName })
+const fitnessMachine = new FitnessMachine({ name: name ? name : defaultName });
 const monitor = new Monitor({ port: port ? port : defaultPort });
 monitor.on('connect', (error?) => {
     if (error) {
@@ -33,14 +33,16 @@ monitor.on('connect', (error?) => {
 });
 monitor.on('disconnect', (error?) => {
     fitnessMachine.stop();
-    process.exitCode = error ? 1 : 0
+    process.exitCode = error ? 1 : 0;
 });
 monitor.on('data', (data) => fitnessMachine.onData(data));
+monitor.on('statusChange', (statusChange) => fitnessMachine.onStatusChange(statusChange));
 
 process.on('SIGINT', function () {
-    monitor.disconnect();
     fitnessMachine.stop();
-    process.exitCode = 0
+    monitor.disconnect();
+    process.exitCode = 0;
+    process.exit();
 });
 
 monitor.connect();

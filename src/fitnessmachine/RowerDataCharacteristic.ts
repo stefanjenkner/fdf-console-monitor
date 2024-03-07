@@ -1,8 +1,7 @@
-import { Characteristic } from '@abandonware/bleno'
-import { Data } from '../monitor/Data';
-import log from 'loglevel'
-
-type UpdateValueCallback = (data: Buffer) => void;
+import { Characteristic } from '@abandonware/bleno';
+import { Data } from '../Data';
+import { UpdateValueCallback } from './UpdateValueCallback';
+import log from 'loglevel';
 
 export class RowerDataCharacteristic extends Characteristic {
 
@@ -19,32 +18,32 @@ export class RowerDataCharacteristic extends Characteristic {
         this.maxValueSize = null;
     }
 
-    onSubscribe(maxValueSize: number, updateValueCallback: (data: Buffer) => void): void {
+    onSubscribe(maxValueSize: number, updateValueCallback: UpdateValueCallback): void {
 
-        log.debug(`RowerDataCharacteristic onSubscribe maxValueSize=${maxValueSize}`)
+        log.debug(`RowerDataCharacteristic onSubscribe maxValueSize=${maxValueSize}`);
         this.updateValueCallback = updateValueCallback;
         this.maxValueSize = maxValueSize;
     }
 
     onUnsubscribe(): void {
 
-        log.debug('RowerDataCharacteristic onUnsubscribe')
+        log.debug('RowerDataCharacteristic onUnsubscribe');
         this.updateValueCallback = null;
         this.maxValueSize = null;
     }
 
     onData(data: Data): void {
 
-        const featureData: Array<Buffer> = []
+        const featureData: Array<Buffer> = [];
         // ?   0 .. Stroke rate and Stroke count (1 if NOT present)
         // 0   1 .. Average Stroke rate (1 if present)
-        // 1   2 .. Total Distance present
+        // ?   2 .. Total Distance present (1 if present)
         // ?   3 .. Instantaneous Pace (1 if present)
         // 0   4 .. Average Pace (1 if present)
         // ?   5 .. Instantaneous Power (1 if present)
         // 0   6 .. Average Power (1 if present)
         // 0   7 .. Resistance Level (1 if present)
-        let featuresOctet1 = 0x05;
+        let featuresOctet1 = 0x01;
         // ?   8 .. Expended Energy (1 if present)
         // 0   9 .. Heart Rate (1 if present)
         // 0  10 .. Metabolic Equivalent (1 if present)
@@ -60,22 +59,25 @@ export class RowerDataCharacteristic extends Characteristic {
             const stokeRate = Buffer.alloc(1);
             stokeRate.writeUInt8(Math.round(data.strokesPerMinute * 2) || 0);
             const strokeCount = Buffer.alloc(2);
-            strokeCount.writeUInt16LE(data.strokes || 0)
+            strokeCount.writeUInt16LE(data.strokes || 0);
             featuresOctet1 &= ~1;
             featureData.push(stokeRate);
             featureData.push(strokeCount);
         }
 
         // Bit 2 - Total Distance
-        const totalDistance = Buffer.alloc(3);
-        totalDistance.writeUInt8((data.distance || 0) & 255)
-        totalDistance.writeUInt16LE((data.distance || 0) >> 8, 1)
-        featureData.push(totalDistance);
+        if (data.distance) {
+            const totalDistance = Buffer.alloc(3);
+            totalDistance.writeUInt8((data.distance || 0) & 255);
+            totalDistance.writeUInt16LE((data.distance || 0) >> 8, 1);
+            featuresOctet1 |= 4;
+            featureData.push(totalDistance);
+        }
 
         // Bit 3 - Instantaneous Pace
         if (data.time500mSplit) {
             const instantaneousPace = Buffer.alloc(2);
-            instantaneousPace.writeUInt16LE(data.time500mSplit || 0)
+            instantaneousPace.writeUInt16LE(data.time500mSplit || 0);
             featuresOctet1 |= 8;
             featureData.push(instantaneousPace);
         }
@@ -83,7 +85,7 @@ export class RowerDataCharacteristic extends Characteristic {
         // Bit 5 - Instantaneous Power
         if (data.wattsPreviousStroke) {
             const instantaneousPower = Buffer.alloc(2);
-            instantaneousPower.writeUInt16LE(data.wattsPreviousStroke || 0)
+            instantaneousPower.writeUInt16LE(data.wattsPreviousStroke || 0);
             featuresOctet1 |= 32;
             featureData.push(instantaneousPower);
         }
@@ -98,7 +100,7 @@ export class RowerDataCharacteristic extends Characteristic {
 
         // Bit 11 - Elapsed Time in seconds
         const elapsedTime = Buffer.alloc(2);
-        elapsedTime.writeUInt16LE(data.elapsedTime || 0)
+        elapsedTime.writeUInt16LE(data.elapsedTime || 0);
         featureData.push(elapsedTime);
 
         // Feature flags

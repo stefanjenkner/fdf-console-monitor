@@ -1,11 +1,9 @@
-import { Data } from '../monitor/Data';
-import { FitnessMachineService } from './FitnessMachineService'
-import bleno from '@abandonware/bleno'
-import log from 'loglevel'
-
-interface FitnessMachineOptions {
-    name: string
-}
+import { Data } from '../Data';
+import { FitnessMachineOptions } from './FitnessMachineOptions';
+import { FitnessMachineService } from './FitnessMachineService';
+import { StatusChange } from '../StatusChange';
+import bleno from '@abandonware/bleno';
+import log from 'loglevel';
 
 export class FitnessMachine {
 
@@ -20,7 +18,7 @@ export class FitnessMachine {
     start(): void {
 
         bleno.on('stateChange', (state) => {
-            log.info(`State changed to: ${state}`)
+            log.info(`State changed to: ${state}`);
             if (state === 'poweredOn') {
                 bleno.startAdvertising(this.options.name, [this.fitnessMachineService.uuid], (error) => {
                     if (error) {
@@ -33,12 +31,12 @@ export class FitnessMachine {
         });
 
         bleno.on('accept', (clientAddress) => {
-            log.debug(`connected: ${clientAddress}`)
-            bleno.updateRssi()
+            log.debug(`connected: ${clientAddress}`);
+            bleno.updateRssi();
         });
 
         bleno.on('disconnect', (clientAddress) => {
-            log.debug(`disconnected: ${clientAddress}`)
+            log.debug(`disconnected: ${clientAddress}`);
         });
 
         bleno.on('advertisingStart', (error) => {
@@ -47,9 +45,9 @@ export class FitnessMachine {
                     [this.fitnessMachineService],
                     (error) => {
                         if (error) {
-                            log.error(`Set service error: ${error}`)
+                            log.error(`Set service error: ${error}`);
                         }
-                    })
+                    });
             }
         });
 
@@ -67,7 +65,10 @@ export class FitnessMachine {
     }
 
     onData(data : Data) {
-
         this.fitnessMachineService.onData(data);
+    }
+
+    onStatusChange(statusChange : StatusChange) {
+        this.fitnessMachineService.onStatusChange(statusChange);
     }
 }

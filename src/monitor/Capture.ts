@@ -7,4 +7,4 @@ export type Capture = {
     watts: number;
     cals: number;
     level: number;
-}
+};

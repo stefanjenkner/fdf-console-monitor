@@ -14,5 +14,6 @@
       "sort-imports": ["error"],
       "@stylistic/ts/indent": ["error", 4],
       "@stylistic/ts/quotes": ["error", "single"],
+      "@stylistic/ts/semi": ["error", "always"],
     }
   }

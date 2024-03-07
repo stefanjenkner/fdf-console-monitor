@@ -1,7 +1,7 @@
 export type Data = {
-
     elapsedTime: number;
-    distance: number;
+    distance: number | null;
+    remainingDistance: number | null;
     time500mSplit: number | null;
     time500mAverage: number | null;
     strokes: number | null;
@@ -11,4 +11,4 @@ export type Data = {
     caloriesPerHour: number | null;
     caloriesTotal: number | null;
     level: number;
-}
+};

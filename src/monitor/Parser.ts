@@ -22,6 +22,6 @@ export class Parser {
             watts: watt,
             cals: caloriesPerHour,
             strokesPerMinute: strokesPerMinute
-        }
+        };
     }
 }
