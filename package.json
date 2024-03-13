@@ -11,7 +11,7 @@
     "build": "rimraf ./build && tsc",
     "lint": "eslint . --ext .ts",
     "lint-and-fix": "eslint . --ext .ts --fix",
-    "test": "jest"
+    "test": "jest --ci --coverage"
   },
   "author": "Stefan Jenkner <stefan@jenkner.org>",
   "license": "MIT",
