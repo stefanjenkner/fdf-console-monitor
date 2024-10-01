@@ -4,7 +4,6 @@ import (
 	"fdf-console-monitor/internal/fitnessmachine"
 	"fdf-console-monitor/internal/serialmonitor"
 	"flag"
-	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -24,7 +23,7 @@ func main() {
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 	go func() {
 		sig := <-sigChan
-		fmt.Printf("Received signal: %v\n", sig)
+		log.Printf("Received signal: %v\n", sig)
 		serialMonitor.Stop()
 	}()
 
@@ -32,6 +31,6 @@ func main() {
 	serialMonitor.AddObserver(fitnessMachine)
 	serialMonitor.Run()
 	fitnessMachine.Stop()
-	log.Println("Stopped")
+	log.Println("Shutdown completed")
 	os.Exit(0)
 }

@@ -58,7 +58,7 @@ func (f *FitnessMachine) Start() {
 }
 
 func (f *FitnessMachine) Stop() {
-	log.Println("Stopping FitnessMachine")
+	log.Println("Stopping FitnessMachine...")
 	if f.cancelFunc != nil {
 		(*f.cancelFunc)()
 	}
@@ -84,7 +84,6 @@ func (f *FitnessMachine) rowerDataNotifyHandler(_ ble.Request, n ble.Notifier) {
 			return
 
 		case dataEvent := <-dataEvents:
-			log.Printf("Received ElapsedTime=%+v\n", dataEvent.ElapsedTime)
 
 			featureData := make([]byte, 0)
 			// ?   0 .. Stroke rate and Stroke count (1 if NOT present)
@@ -96,7 +95,6 @@ func (f *FitnessMachine) rowerDataNotifyHandler(_ ble.Request, n ble.Notifier) {
 			// 0   6 .. Average Power (1 if present)
 			// 0   7 .. Resistance Level (1 if present)
 			featureData = append(featureData, byte(0x01))
-
 			// ?   8 .. Expended Energy (1 if present)
 			// 0   9 .. Heart Rate (1 if present)
 			// 0  10 .. Metabolic Equivalent (1 if present)
@@ -188,7 +186,6 @@ func (f *FitnessMachine) rowerFeatureReadHandler(_ ble.Request, rsp ble.Response
 }
 
 func (f *FitnessMachine) OnData(event events.DataEvent) {
-	log.Printf("OnDataEvent: %+v\n", event)
 	if f.rowerDataEvents != nil {
 		*f.rowerDataEvents <- event
 	}

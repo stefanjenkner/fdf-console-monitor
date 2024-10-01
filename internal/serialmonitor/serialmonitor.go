@@ -23,47 +23,6 @@ func NewSerialMonitor(portName string) *SerialMonitor {
 	}
 }
 
-func (m *SerialMonitor) createLineChannel(stop *chan struct{}) <-chan string {
-	channel := make(chan string)
-
-	go func() {
-		defer close(channel)
-
-		// connect
-		if m.port == nil {
-			mode := &serial.Mode{BaudRate: 9600}
-			port, err := serial.Open(m.portName, mode)
-			if err != nil {
-				log.Printf("Error opening port %s: %+v\n", m.portName, err)
-				return
-			}
-			m.port = &port
-		}
-		defer m.closePortQuietly()
-
-		// send C for connect
-		if err := m.writeLine("C"); err != nil {
-			log.Printf("Error connecting: %+v\n", err)
-		}
-
-		// read line by line until EOT
-		scanner := bufio.NewScanner(*m.port)
-		for scanner.Scan() {
-			select {
-			case channel <- scanner.Text():
-			case <-*stop:
-				return
-			}
-		}
-
-		if err := scanner.Err(); err != nil {
-			log.Printf("Error reading serial port: %s\n", err)
-		}
-	}()
-
-	return channel
-}
-
 func (m *SerialMonitor) Run() {
 	fmt.Printf("Running SerialMonitor: %s\n", m.portName)
 
@@ -118,11 +77,65 @@ func (m *SerialMonitor) Run() {
 			strokes = 0
 		}
 	}
+
+	log.Println("Stopped SerialMonitor")
+}
+
+func (m *SerialMonitor) createLineChannel(stop *chan struct{}) <-chan string {
+	channel := make(chan string)
+
+	go func() {
+		defer close(channel)
+
+		// connect
+		if err := m.openPort(); err != nil {
+			log.Printf("Error connecting: %s\n", err)
+			return
+		}
+		defer m.closePort()
+
+		// send C for connect
+		if err := m.writeLine("C"); err != nil {
+			log.Printf("Error connecting: %s\n", err)
+			return
+		}
+
+		// read line by line until EOT or receiving stop
+		scanner := bufio.NewScanner(*m.port)
+		for scanner.Scan() {
+			select {
+			case channel <- scanner.Text():
+			case <-*stop:
+				log.Println("SerialMonitor received stop signal")
+				return
+			}
+		}
+
+		if err := scanner.Err(); err != nil {
+			log.Printf("SerialMonitor received non-EOF error: %s\n", err)
+			return
+		}
+	}()
+
+	return channel
+}
+
+func (m *SerialMonitor) openPort() error {
+	if m.port == nil {
+		mode := &serial.Mode{BaudRate: 9600}
+		port, err := serial.Open(m.portName, mode)
+		if err != nil {
+			log.Printf("Error opening port %s: %+v\n", m.portName, err)
+			return err
+		}
+		m.port = &port
+	}
+	return nil
 }
 
 func (m *SerialMonitor) Stop() {
-	log.Println("Stopping SerialMonitor")
 	if (*m.stopChannel) != nil {
+		log.Println("Stopping SerialMonitor...")
 		*m.stopChannel <- struct{}{}
 	}
 }
@@ -148,7 +161,7 @@ func (m *SerialMonitor) writeLine(line string) error {
 	return err
 }
 
-func (m *SerialMonitor) closePortQuietly() {
+func (m *SerialMonitor) closePort() {
 	if m.port == nil {
 		return
 	}
