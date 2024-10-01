@@ -1,0 +1,19 @@
+name: GO CI
+on:
+  pull_request:
+  push:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+      - name: get dependencies
+        run: |
+          go mod download
+      - name: build
+        run: |
+          go build ./...
+      - name: test
+        run: |
+          go test -v ./...
