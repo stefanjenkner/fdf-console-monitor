@@ -24,7 +24,7 @@ func NewSerialMonitor(portName string) *SerialMonitor {
 }
 
 func (m *SerialMonitor) Run() {
-	fmt.Printf("Running SerialMonitor: %s\n", m.portName)
+	log.Printf("Running SerialMonitor on port: %s\n", m.portName)
 
 	stopChan := make(chan struct{})
 	m.stopChannel = &stopChan
@@ -89,7 +89,7 @@ func (m *SerialMonitor) createLineChannel(stop *chan struct{}) <-chan string {
 
 		// connect
 		if err := m.openPort(); err != nil {
-			log.Printf("Error connecting: %s\n", err)
+			log.Printf("Error opening port: %s\n", err)
 			return
 		}
 		defer m.closePort()
@@ -125,8 +125,7 @@ func (m *SerialMonitor) openPort() error {
 		mode := &serial.Mode{BaudRate: 9600}
 		port, err := serial.Open(m.portName, mode)
 		if err != nil {
-			log.Printf("Error opening port %s: %+v\n", m.portName, err)
-			return err
+			return fmt.Errorf("failed to open port %s: %w", m.portName, err)
 		}
 		m.port = &port
 	}

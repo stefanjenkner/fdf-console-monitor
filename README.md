@@ -13,10 +13,14 @@ Install dependencies and build:
 
 Run:
 
-    go run ./... --port /dev/ttyUSB0
+    go run ./cmd/app --name "FDF Rower" --port /dev/ttyUSB0
+
+Optional: Build binary for Linux and set capability flags:
+
+    CGO_ENABLED=0 go build -a -o fdf-console-monitor ./cmd/app
+    sudo setcap 'cap_net_raw,cap_net_admin+eip' fdf-console-monitor
+    ./fdf-console-monitor --name "FDF Rower" --port /dev/ttyUSB0
 
 ## Notes
 
-Uses [go-ble](go-ble) for BLE communication
-
-[go-ble]: https://github.com/go-ble/ble
+Uses [go-ble](https://github.com/go-ble/ble) for BLE communication
