@@ -120,11 +120,11 @@ func TestSerialMonitor_Run(t *testing.T) {
 	}
 
 	wantedStatusChangeEvents := []events.StatusChangeEvent{
-		{events.Started},
-		{events.Reset},
-		{events.PausedOrStopped},
-		{events.Resumed},
-		{events.PausedOrStopped},
+		{StatusChange: events.Started},
+		{StatusChange: events.Reset},
+		{StatusChange: events.PausedOrStopped},
+		{StatusChange: events.Resumed},
+		{StatusChange: events.PausedOrStopped},
 	}
 	if got := len(observer.statusChangeEvents); len(wantedStatusChangeEvents) != got {
 		t.Errorf("# statusChangeEvents = %v, wantedDataEvents %v", got, len(wantedStatusChangeEvents))
