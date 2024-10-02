@@ -4,10 +4,11 @@ import (
 	"bytes"
 	"context"
 	"fdf-console-monitor/internal/events"
-	"github.com/go-ble/ble"
 	"reflect"
 	"testing"
 	"time"
+
+	"github.com/go-ble/ble"
 )
 
 type NotifierMock struct {
@@ -23,7 +24,6 @@ func TestFitnessMachine_NewSerialMonitor(t *testing.T) {
 }
 
 func TestFitnessMachine_rowerDataNotifyHandler(t *testing.T) {
-
 	notifierContext, cancelFunc := context.WithCancel(context.Background())
 	var buffer bytes.Buffer
 	var notifierMock ble.Notifier = &NotifierMock{

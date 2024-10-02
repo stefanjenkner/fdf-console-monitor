@@ -3,11 +3,12 @@ package fitnessmachine
 import (
 	"context"
 	"encoding/binary"
+	"log"
+	"time"
+
 	"fdf-console-monitor/internal/events"
 	"github.com/go-ble/ble"
 	"github.com/go-ble/ble/examples/lib/dev"
-	"log"
-	"time"
 )
 
 type FitnessMachine struct {
@@ -77,7 +78,6 @@ func (f *FitnessMachine) rowerDataNotifyHandler(_ ble.Request, n ble.Notifier) {
 
 	for {
 		select {
-
 		case <-n.Context().Done():
 			log.Println("Subscription stopped")
 			f.rowerDataEvents = nil

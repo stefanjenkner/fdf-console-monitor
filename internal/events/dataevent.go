@@ -20,10 +20,11 @@ type DataEventBuilder struct {
 }
 
 func NewDataEventBuilder(ElapsedTime uint64, Level uint64) *DataEventBuilder {
-	return &DataEventBuilder{&DataEvent{
-		ElapsedTime: ElapsedTime,
-		Level:       Level,
-	},
+	return &DataEventBuilder{
+		&DataEvent{
+			ElapsedTime: ElapsedTime,
+			Level:       Level,
+		},
 	}
 }
 
