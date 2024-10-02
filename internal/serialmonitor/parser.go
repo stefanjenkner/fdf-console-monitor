@@ -3,7 +3,6 @@ package serialmonitor
 import "strconv"
 
 func parse(line string) capture {
-
 	totalMinutes, _ := strconv.ParseUint(line[3:5], 10, 64)
 	totalSeconds, _ := strconv.ParseUint(line[5:7], 10, 64)
 	distance, _ := strconv.ParseUint(line[7:12], 10, 64)

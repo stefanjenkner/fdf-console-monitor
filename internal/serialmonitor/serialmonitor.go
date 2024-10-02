@@ -4,9 +4,10 @@ import (
 	"bufio"
 	"fdf-console-monitor/internal/events"
 	"fmt"
-	"go.bug.st/serial"
 	"log"
 	"strings"
+
+	"go.bug.st/serial"
 )
 
 type SerialMonitor struct {
@@ -35,7 +36,6 @@ func (m *SerialMonitor) Run() {
 	lineChannel := m.createLineChannel(&stopChan)
 
 	for line := range lineChannel {
-
 		log.Printf("Received: %s\n", line)
 		switch {
 		case strings.HasPrefix(line, "A"):

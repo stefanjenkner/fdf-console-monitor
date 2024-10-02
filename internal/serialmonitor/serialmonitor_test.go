@@ -3,10 +3,11 @@ package serialmonitor
 import (
 	"bytes"
 	"fdf-console-monitor/internal/events"
-	"go.bug.st/serial"
 	"reflect"
 	"testing"
 	"time"
+
+	"go.bug.st/serial"
 )
 
 type MockSerialPort struct {
@@ -21,7 +22,6 @@ type MockObserver struct {
 }
 
 func TestSerialMonitor_Run(t *testing.T) {
-
 	bufferString := bytes.NewBufferString("")
 	// session one
 	bufferString.WriteString("A8000040000710428014108067004\r\n")
@@ -39,7 +39,8 @@ func TestSerialMonitor_Run(t *testing.T) {
 
 	mockSerialPort := MockSerialPort{
 		readBuffer:  *bufferString,
-		writeBuffer: bytes.Buffer{}}
+		writeBuffer: bytes.Buffer{},
+	}
 	var port serial.Port = &mockSerialPort
 	serialMonitor := SerialMonitor{
 		portName:  "/dev/mocked/serial/port",
@@ -48,64 +49,66 @@ func TestSerialMonitor_Run(t *testing.T) {
 	}
 	observer := &MockObserver{
 		dataEvents:         make([]events.DataEvent, 0),
-		statusChangeEvents: make([]events.StatusChangeEvent, 0)}
+		statusChangeEvents: make([]events.StatusChangeEvent, 0),
+	}
 	serialMonitor.AddObserver(observer)
 	serialMonitor.Run()
 
 	uint64Ptr := func(v uint64) *uint64 {
 		return &v
 	}
-	wantedDataEvents := []events.DataEvent{{
-		ElapsedTime:         4,
-		Level:               4,
-		Distance:            uint64Ptr(7),
-		Time500mSplit:       uint64Ptr(268),
-		Strokes:             uint64Ptr(1),
-		StrokesPerMinute:    uint64Ptr(14),
-		WattsPreviousStroke: uint64Ptr(108),
-		CaloriesPerHour:     uint64Ptr(670),
-	}, {
-		ElapsedTime:         6,
-		Level:               4,
-		Distance:            uint64Ptr(14),
-		Time500mSplit:       uint64Ptr(163),
-		Strokes:             uint64Ptr(2),
-		StrokesPerMinute:    uint64Ptr(28),
-		WattsPreviousStroke: uint64Ptr(105),
-		CaloriesPerHour:     uint64Ptr(659),
-	}, {
-		ElapsedTime:         8,
-		Level:               4,
-		Distance:            uint64Ptr(21),
-		Time500mSplit:       uint64Ptr(148),
-		Strokes:             uint64Ptr(3),
-		StrokesPerMinute:    uint64Ptr(29),
-		WattsPreviousStroke: uint64Ptr(109),
-		CaloriesPerHour:     uint64Ptr(674),
-	}, {
-		ElapsedTime:       2,
-		Level:             4,
-		RemainingDistance: uint64Ptr(0),
-		Time500mAverage:   uint64Ptr(0),
-		WattsAverage:      uint64Ptr(0),
-		CaloriesTotal:     uint64Ptr(0),
-	}, {
-		ElapsedTime:         5,
-		Level:               4,
-		Distance:            uint64Ptr(8),
-		Time500mSplit:       uint64Ptr(319),
-		Strokes:             uint64Ptr(1),
-		StrokesPerMinute:    uint64Ptr(11),
-		WattsPreviousStroke: uint64Ptr(106),
-		CaloriesPerHour:     uint64Ptr(663),
-	}, {
-		ElapsedTime:       1810,
-		Level:             4,
-		RemainingDistance: uint64Ptr(6015),
-		Time500mAverage:   uint64Ptr(153),
-		WattsAverage:      uint64Ptr(109),
-		CaloriesTotal:     uint64Ptr(400),
-	},
+	wantedDataEvents := []events.DataEvent{
+		{
+			ElapsedTime:         4,
+			Level:               4,
+			Distance:            uint64Ptr(7),
+			Time500mSplit:       uint64Ptr(268),
+			Strokes:             uint64Ptr(1),
+			StrokesPerMinute:    uint64Ptr(14),
+			WattsPreviousStroke: uint64Ptr(108),
+			CaloriesPerHour:     uint64Ptr(670),
+		}, {
+			ElapsedTime:         6,
+			Level:               4,
+			Distance:            uint64Ptr(14),
+			Time500mSplit:       uint64Ptr(163),
+			Strokes:             uint64Ptr(2),
+			StrokesPerMinute:    uint64Ptr(28),
+			WattsPreviousStroke: uint64Ptr(105),
+			CaloriesPerHour:     uint64Ptr(659),
+		}, {
+			ElapsedTime:         8,
+			Level:               4,
+			Distance:            uint64Ptr(21),
+			Time500mSplit:       uint64Ptr(148),
+			Strokes:             uint64Ptr(3),
+			StrokesPerMinute:    uint64Ptr(29),
+			WattsPreviousStroke: uint64Ptr(109),
+			CaloriesPerHour:     uint64Ptr(674),
+		}, {
+			ElapsedTime:       2,
+			Level:             4,
+			RemainingDistance: uint64Ptr(0),
+			Time500mAverage:   uint64Ptr(0),
+			WattsAverage:      uint64Ptr(0),
+			CaloriesTotal:     uint64Ptr(0),
+		}, {
+			ElapsedTime:         5,
+			Level:               4,
+			Distance:            uint64Ptr(8),
+			Time500mSplit:       uint64Ptr(319),
+			Strokes:             uint64Ptr(1),
+			StrokesPerMinute:    uint64Ptr(11),
+			WattsPreviousStroke: uint64Ptr(106),
+			CaloriesPerHour:     uint64Ptr(663),
+		}, {
+			ElapsedTime:       1810,
+			Level:             4,
+			RemainingDistance: uint64Ptr(6015),
+			Time500mAverage:   uint64Ptr(153),
+			WattsAverage:      uint64Ptr(109),
+			CaloriesTotal:     uint64Ptr(400),
+		},
 	}
 
 	if got := len(observer.dataEvents); len(wantedDataEvents) != got {
@@ -120,11 +123,11 @@ func TestSerialMonitor_Run(t *testing.T) {
 	}
 
 	wantedStatusChangeEvents := []events.StatusChangeEvent{
-		{events.Started},
-		{events.Reset},
-		{events.PausedOrStopped},
-		{events.Resumed},
-		{events.PausedOrStopped},
+		{StatusChange: events.Started},
+		{StatusChange: events.Reset},
+		{StatusChange: events.PausedOrStopped},
+		{StatusChange: events.Resumed},
+		{StatusChange: events.PausedOrStopped},
 	}
 	if got := len(observer.statusChangeEvents); len(wantedStatusChangeEvents) != got {
 		t.Errorf("# statusChangeEvents = %v, wantedDataEvents %v", got, len(wantedStatusChangeEvents))

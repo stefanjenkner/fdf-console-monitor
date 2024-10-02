@@ -11,7 +11,6 @@ import (
 )
 
 func main() {
-
 	name := flag.String("name", "FDF Rower", "Name of BLE device")
 	port := flag.String("port", "/dev/ttyUSB0", "Serial port to use")
 	flag.Parse()
