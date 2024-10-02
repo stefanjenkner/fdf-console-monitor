@@ -1,4 +1,4 @@
-name: GO CI
+name: CI
 on:
   pull_request:
   push:
@@ -8,12 +8,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
-      - name: get dependencies
-        run: |
-          go mod download
       - name: build
         run: |
           go build ./...
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+      - uses: gotesttools/gotestfmt-action@v2
       - name: test
         run: |
-          go test -v ./...
+          set -euo pipefail
+          go test -json -v ./... 2>&1 | tee /tmp/gotest.log | gotestfmt
+  lint:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+      - uses: golangci/golangci-lint-action@v6
