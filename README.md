@@ -21,6 +21,24 @@ Optional: Build binary for Linux and set capability flags:
     sudo setcap 'cap_net_raw,cap_net_admin+eip' fdf-console-monitor
     ./fdf-console-monitor --name "FDF Rower" --port /dev/ttyUSB0
 
+## Contribution
+
+Prerequisites for development:
+
+<details>
+<summary>macOS</summary>
+
+```bash
+brew install pre-commit commitizen golangci-lint
+```
+</details>
+
+Set up pre-commit hooks:
+
+```bash
+pre-commit install && pre-commit install --hook-type commit-msg && pre-commit run
+```
+
 ## Notes
 
 Uses [go-ble](https://github.com/go-ble/ble) for BLE communication
