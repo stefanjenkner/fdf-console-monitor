@@ -8,7 +8,7 @@ import (
 
 	"github.com/go-ble/ble"
 	"github.com/go-ble/ble/examples/lib/dev"
-	"github.com/stefanjenkner/fdf-console-monitor/internal/events"
+	"github.com/stefanjenkner/fdf-console-monitor/pkg/events"
 )
 
 type FitnessMachine struct {

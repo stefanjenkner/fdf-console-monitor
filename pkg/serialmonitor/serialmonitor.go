@@ -6,7 +6,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/stefanjenkner/fdf-console-monitor/internal/events"
+	"github.com/stefanjenkner/fdf-console-monitor/pkg/events"
 	"go.bug.st/serial"
 )
 
