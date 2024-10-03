@@ -40,6 +40,7 @@ jobs:
   release:
     needs: [build, lint, test]
     runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'pull_request' }}
     steps:
       - uses: actions/checkout@v4
       - uses: go-semantic-release/action@v1
