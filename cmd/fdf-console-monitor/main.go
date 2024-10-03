@@ -7,8 +7,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"fdf-console-monitor/internal/fitnessmachine"
-	"fdf-console-monitor/internal/serialmonitor"
+	"github.com/stefanjenkner/fdf-console-monitor/internal/fitnessmachine"
+	"github.com/stefanjenkner/fdf-console-monitor/internal/serialmonitor"
 )
 
 func main() {

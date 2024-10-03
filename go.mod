@@ -1,4 +1,4 @@
-module fdf-console-monitor
+module github.com/stefanjenkner/fdf-console-monitor
 
 go 1.23.1
 
