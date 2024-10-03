@@ -2,10 +2,11 @@ package serialmonitor
 
 import (
 	"bytes"
-	"fdf-console-monitor/internal/events"
 	"reflect"
 	"testing"
 	"time"
+
+	"fdf-console-monitor/internal/events"
 
 	"go.bug.st/serial"
 )

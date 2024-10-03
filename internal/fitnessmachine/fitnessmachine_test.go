@@ -3,10 +3,11 @@ package fitnessmachine
 import (
 	"bytes"
 	"context"
-	"fdf-console-monitor/internal/events"
 	"reflect"
 	"testing"
 	"time"
+
+	"fdf-console-monitor/internal/events"
 
 	"github.com/go-ble/ble"
 )

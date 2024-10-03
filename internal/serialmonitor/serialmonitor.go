@@ -2,10 +2,11 @@ package serialmonitor
 
 import (
 	"bufio"
-	"fdf-console-monitor/internal/events"
 	"fmt"
 	"log"
 	"strings"
+
+	"fdf-console-monitor/internal/events"
 
 	"go.bug.st/serial"
 )

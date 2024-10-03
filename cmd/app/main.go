@@ -1,13 +1,14 @@
 package main
 
 import (
-	"fdf-console-monitor/internal/fitnessmachine"
-	"fdf-console-monitor/internal/serialmonitor"
 	"flag"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"fdf-console-monitor/internal/fitnessmachine"
+	"fdf-console-monitor/internal/serialmonitor"
 )
 
 func main() {
