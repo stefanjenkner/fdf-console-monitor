@@ -10,7 +10,7 @@ linters:
     - bugs
     - comment
   #  - complexity
-  #  - error
+    - error
   #  - format
     - import
   #  - metalinter

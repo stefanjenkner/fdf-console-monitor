@@ -2,6 +2,7 @@ package serialmonitor
 
 import (
 	"bytes"
+	"fmt"
 	"reflect"
 	"testing"
 	"time"
@@ -166,11 +167,19 @@ func (m *MockObserver) OnStatusChange(event events.StatusChangeEvent) {
 }
 
 func (m *MockSerialPort) Read(p []byte) (n int, err error) {
-	return m.readBuffer.Read(p)
+	read, err := m.readBuffer.Read(p)
+	if err != nil {
+		return read, fmt.Errorf("read: unexpected error: %w", err)
+	}
+	return read, nil
 }
 
 func (m *MockSerialPort) Write(p []byte) (n int, err error) {
-	return m.writeBuffer.Write(p)
+	write, err := m.writeBuffer.Write(p)
+	if err != nil {
+		return 0, fmt.Errorf("write: unexpected error: %w", err)
+	}
+	return write, nil
 }
 
 func (m *MockSerialPort) Close() error {

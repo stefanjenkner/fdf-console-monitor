@@ -30,11 +30,15 @@ func parse(line string) capture {
 	}
 }
 
+var (
+	SecondsOutOfRange = errors.New("seconds out of range")
+)
+
 func getSecondsUint16(minutes uint64, seconds uint64) (uint16, error) {
 
 	result := minutes*60 + seconds
 	if result > math.MaxUint16 {
-		return 0, errors.New("seconds out of range")
+		return 0, SecondsOutOfRange
 	}
 
 	return uint16(result), nil
