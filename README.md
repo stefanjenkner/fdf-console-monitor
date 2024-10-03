@@ -11,7 +11,7 @@ Tested with First Degree Fitness NEON plus water rower which comes with the
 Run:
 
 ```bash
-go run ./cmd/app --name "FDF Rower" --port /dev/ttyUSB0
+go run ./cmd/fdf-console-monitor --name "FDF Rower" --port /dev/ttyUSB0
 ```
 
 ## Advanced usage: building on Linux for running in non-root context
@@ -19,7 +19,7 @@ go run ./cmd/app --name "FDF Rower" --port /dev/ttyUSB0
 Build binary on Linux - e.g. for running on Raspberry Pi:
 
 ```bash
-CGO_ENABLED=0 go build -a -o fdf-console-monitor ./cmd/app
+CGO_ENABLED=0 go build -a -o fdf-console-monitor ./cmd/fdf-console-monitor
 ```
 
 Grant only specific capabilities instead of full root access:
