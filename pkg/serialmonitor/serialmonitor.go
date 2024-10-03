@@ -157,7 +157,10 @@ func (m *SerialMonitor) emitStatusChangeEvent(event events.StatusChangeEvent) {
 
 func (m *SerialMonitor) writeLine(line string) error {
 	_, err := (*m.port).Write([]byte(line + "\n"))
-	return err
+	if err != nil {
+		return fmt.Errorf("writeLine: unexpected error: %w", err)
+	}
+	return nil
 }
 
 func (m *SerialMonitor) closePort() {

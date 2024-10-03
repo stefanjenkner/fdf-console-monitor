@@ -3,6 +3,7 @@ package fitnessmachine
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"reflect"
 	"testing"
 	"time"
@@ -65,7 +66,11 @@ func (n *NotifierMock) Context() context.Context {
 }
 
 func (n *NotifierMock) Write(b []byte) (int, error) {
-	return (*n.buffer).Write(b)
+	write, err := (*n.buffer).Write(b)
+	if err != nil {
+		return 0, fmt.Errorf("write: unexpected error: %w", err)
+	}
+	return write, nil
 }
 
 func (n *NotifierMock) Close() error {
