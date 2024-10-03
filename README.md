@@ -1,25 +1,57 @@
 # FDF Console monitor
 
-Expose a First Degree Fitness water rower as BLE (Bluetooth Low Energy) peripheral providing Fitness Machine Service
-(FTMS) rower data.
+Expose a First Degree Fitness water rower as BLE (Bluetooth Low Energy)
+peripheral providing Fitness Machine Service (FTMS) rower data.
 
-Tested with First Degree Fitness NEON plus water rower which comes with the (basic) FDF Console and a serial interface.
+Tested with First Degree Fitness NEON plus water rower which comes with the
+(basic) FDF Console and a serial interface.
 
 ## Usage
 
-Install dependencies and build:
-
-    go mod download
-
 Run:
 
-    go run ./cmd/app --name "FDF Rower" --port /dev/ttyUSB0
+```bash
+go run ./cmd/app --name "FDF Rower" --port /dev/ttyUSB0
+```
 
-Optional: Build binary for Linux and set capability flags:
+## Advanced usage: building on Linux for running in non-root context
 
-    CGO_ENABLED=0 go build -a -o fdf-console-monitor ./cmd/app
-    sudo setcap 'cap_net_raw,cap_net_admin+eip' fdf-console-monitor
-    ./fdf-console-monitor --name "FDF Rower" --port /dev/ttyUSB0
+Build binary on Linux - e.g. for running on Raspberry Pi:
+
+```bash
+CGO_ENABLED=0 go build -a -o fdf-console-monitor ./cmd/app
+```
+
+Grant only specific capabilities instead of full root access:
+
+```bash
+sudo setcap 'cap_net_raw,cap_net_admin+eip' ./fdf-console-monitor
+```
+
+Run as non-root:
+
+```bash
+./fdf-console-monitor --name "FDF Rower" --port /dev/ttyUSB0
+```
+
+## Contribution
+
+Prerequisites for development:
+
+<details>
+<summary>macOS</summary>
+
+```bash
+brew install pre-commit commitizen golangci-lint
+```
+
+</details>
+
+Set up pre-commit hooks:
+
+```bash
+pre-commit install && pre-commit install --hook-type commit-msg && pre-commit run
+```
 
 ## Notes
 
