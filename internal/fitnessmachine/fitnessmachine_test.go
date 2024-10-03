@@ -34,18 +34,21 @@ func TestFitnessMachine_rowerDataNotifyHandler(t *testing.T) {
 	f := &FitnessMachine{}
 	go f.rowerDataNotifyHandler(nil, notifierMock)
 	time.Sleep(1 * time.Second)
-	uint64Ptr := func(v uint64) *uint64 {
+	uint8Ptr := func(v uint8) *uint8 {
+		return &v
+	}
+	uint16Ptr := func(v uint16) *uint16 {
 		return &v
 	}
 	f.OnData(events.DataEvent{
 		ElapsedTime:         45,
 		Level:               0,
-		Distance:            uint64Ptr(123),
-		Time500mSplit:       uint64Ptr(115),
-		Strokes:             uint64Ptr(23),
-		StrokesPerMinute:    uint64Ptr(31),
-		WattsPreviousStroke: uint64Ptr(105),
-		CaloriesPerHour:     uint64Ptr(987),
+		Distance:            uint16Ptr(123),
+		Time500mSplit:       uint16Ptr(115),
+		Strokes:             uint16Ptr(23),
+		StrokesPerMinute:    uint8Ptr(31),
+		WattsPreviousStroke: uint16Ptr(105),
+		CaloriesPerHour:     uint16Ptr(987),
 	})
 	time.Sleep(1 * time.Second)
 

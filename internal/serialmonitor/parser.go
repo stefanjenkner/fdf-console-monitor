@@ -1,25 +1,41 @@
 package serialmonitor
 
-import "strconv"
+import (
+	"errors"
+	"math"
+	"strconv"
+)
 
 func parse(line string) capture {
-	totalMinutes, _ := strconv.ParseUint(line[3:5], 10, 64)
-	totalSeconds, _ := strconv.ParseUint(line[5:7], 10, 64)
-	distance, _ := strconv.ParseUint(line[7:12], 10, 64)
-	to500mMinutes, _ := strconv.ParseUint(line[13:15], 10, 64)
-	to500mSeconds, _ := strconv.ParseUint(line[15:17], 10, 64)
-	strokesPerMinute, _ := strconv.ParseUint(line[17:20], 10, 64)
-	watt, _ := strconv.ParseUint(line[20:23], 10, 64)
-	caloriesPerHour, _ := strconv.ParseUint(line[23:27], 10, 64)
-	level, _ := strconv.ParseUint(line[27:29], 10, 64)
+	totalMinutes, _ := strconv.ParseUint(line[3:5], 10, 8)
+	totalSeconds, _ := strconv.ParseUint(line[5:7], 10, 8)
+	elapsedTime, _ := getSecondsUint16(totalMinutes, totalSeconds)
+	distance, _ := strconv.ParseUint(line[7:12], 10, 16)
+	to500mMinutes, _ := strconv.ParseUint(line[13:15], 10, 8)
+	to500mSeconds, _ := strconv.ParseUint(line[15:17], 10, 8)
+	time500m, _ := getSecondsUint16(to500mMinutes, to500mSeconds)
+	strokesPerMinute, _ := strconv.ParseUint(line[17:20], 10, 8)
+	watt, _ := strconv.ParseUint(line[20:23], 10, 16)
+	caloriesPerHour, _ := strconv.ParseUint(line[23:27], 10, 16)
+	level, _ := strconv.ParseUint(line[27:29], 10, 8)
 
 	return capture{
-		elapsedTime:      totalMinutes*60 + totalSeconds,
-		distance:         distance,
-		time500m:         to500mMinutes*60 + to500mSeconds,
-		strokesPerMinute: strokesPerMinute,
-		watts:            watt,
-		cals:             caloriesPerHour,
-		level:            level,
+		elapsedTime:      elapsedTime,
+		distance:         uint16(distance),
+		time500m:         time500m,
+		strokesPerMinute: uint8(strokesPerMinute),
+		watts:            uint16(watt),
+		cals:             uint16(caloriesPerHour),
+		level:            uint8(level),
 	}
+}
+
+func getSecondsUint16(minutes uint64, seconds uint64) (uint16, error) {
+
+	result := minutes*60 + seconds
+	if result > math.MaxUint16 {
+		return 0, errors.New("seconds out of range")
+	}
+
+	return uint16(result), nil
 }

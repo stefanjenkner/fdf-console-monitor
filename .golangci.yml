@@ -7,7 +7,7 @@ linters:
     - staticcheck
     - unused
   presets:
-  #  - bugs
+    - bugs
     - comment
   #  - complexity
   #  - error
