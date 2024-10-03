@@ -3,12 +3,12 @@ package fitnessmachine
 import (
 	"bytes"
 	"context"
-	"fdf-console-monitor/internal/events"
 	"reflect"
 	"testing"
 	"time"
 
 	"github.com/go-ble/ble"
+	"github.com/stefanjenkner/fdf-console-monitor/pkg/events"
 )
 
 type NotifierMock struct {

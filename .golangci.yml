@@ -12,10 +12,20 @@ linters:
   #  - complexity
   #  - error
   #  - format
-  #  - import
+    - import
   #  - metalinter
   #  - module
     - performance
   #  - style
   #  - test
     - unused
+linters-settings:
+  depguard:
+    rules:
+      main:
+        files:
+          - $all
+        allow:
+          - $gostd
+          - github.com/go-ble/ble
+          - github.com/stefanjenkner/fdf-console-monitor
