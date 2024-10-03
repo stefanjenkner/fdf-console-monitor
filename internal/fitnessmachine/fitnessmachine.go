@@ -110,17 +110,18 @@ func (f *FitnessMachine) rowerDataNotifyHandler(_ ble.Request, n ble.Notifier) {
 				strokeRate := uint8(*(dataEvent.StrokesPerMinute) * 2)
 				featureData = append(featureData, strokeRate)
 				strokeCount := make([]byte, 2)
-				binary.LittleEndian.PutUint16(strokeCount, uint16(*dataEvent.Strokes))
+				binary.LittleEndian.PutUint16(strokeCount, *dataEvent.Strokes)
 				featureData = append(featureData, strokeCount...)
 				featureData[0] ^= 1 << 0
 			}
 
 			// Bit 2 - Total Distance
 			if dataEvent.Distance != nil {
-				distance := uint32(*dataEvent.Distance)
+				distance := *dataEvent.Distance
 				totalDistance := make([]byte, 3)
 				totalDistance[0] = byte(distance & 255)
-				binary.LittleEndian.PutUint16(totalDistance[1:], uint16(distance>>8))
+				totalDistance[1] = byte((distance >> 8) & 255)
+				totalDistance[2] = 0
 				featureData = append(featureData, totalDistance...)
 				featureData[0] |= 4
 			}
@@ -128,7 +129,7 @@ func (f *FitnessMachine) rowerDataNotifyHandler(_ ble.Request, n ble.Notifier) {
 			// Bit 3 - Instantaneous Pace
 			if dataEvent.Time500mSplit != nil {
 				instantaneousPace := make([]byte, 2)
-				binary.LittleEndian.PutUint16(instantaneousPace, uint16(*dataEvent.Time500mSplit))
+				binary.LittleEndian.PutUint16(instantaneousPace, *dataEvent.Time500mSplit)
 				featureData = append(featureData, instantaneousPace...)
 				featureData[0] |= 8
 			}
@@ -136,14 +137,14 @@ func (f *FitnessMachine) rowerDataNotifyHandler(_ ble.Request, n ble.Notifier) {
 			// Bit 5 - Instantaneous Power
 			if dataEvent.WattsPreviousStroke != nil {
 				instantaneousPower := make([]byte, 2)
-				binary.LittleEndian.PutUint16(instantaneousPower, uint16(*dataEvent.WattsPreviousStroke))
+				binary.LittleEndian.PutUint16(instantaneousPower, *dataEvent.WattsPreviousStroke)
 				featureData = append(featureData, instantaneousPower...)
 				featureData[0] |= 32
 			}
 
 			// Bit 11 - Elapsed Time in seconds
 			elapsedTime := make([]byte, 2)
-			binary.LittleEndian.PutUint16(elapsedTime, uint16(dataEvent.ElapsedTime))
+			binary.LittleEndian.PutUint16(elapsedTime, dataEvent.ElapsedTime)
 			featureData = append(featureData, elapsedTime...)
 			featureData[1] |= 8
 

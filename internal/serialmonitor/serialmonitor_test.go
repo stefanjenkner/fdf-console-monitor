@@ -54,60 +54,63 @@ func TestSerialMonitor_Run(t *testing.T) {
 	serialMonitor.AddObserver(observer)
 	serialMonitor.Run()
 
-	uint64Ptr := func(v uint64) *uint64 {
+	uint8Ptr := func(v uint8) *uint8 {
+		return &v
+	}
+	uint16Ptr := func(v uint16) *uint16 {
 		return &v
 	}
 	wantedDataEvents := []events.DataEvent{
 		{
 			ElapsedTime:         4,
 			Level:               4,
-			Distance:            uint64Ptr(7),
-			Time500mSplit:       uint64Ptr(268),
-			Strokes:             uint64Ptr(1),
-			StrokesPerMinute:    uint64Ptr(14),
-			WattsPreviousStroke: uint64Ptr(108),
-			CaloriesPerHour:     uint64Ptr(670),
+			Distance:            uint16Ptr(7),
+			Time500mSplit:       uint16Ptr(268),
+			Strokes:             uint16Ptr(1),
+			StrokesPerMinute:    uint8Ptr(14),
+			WattsPreviousStroke: uint16Ptr(108),
+			CaloriesPerHour:     uint16Ptr(670),
 		}, {
 			ElapsedTime:         6,
 			Level:               4,
-			Distance:            uint64Ptr(14),
-			Time500mSplit:       uint64Ptr(163),
-			Strokes:             uint64Ptr(2),
-			StrokesPerMinute:    uint64Ptr(28),
-			WattsPreviousStroke: uint64Ptr(105),
-			CaloriesPerHour:     uint64Ptr(659),
+			Distance:            uint16Ptr(14),
+			Time500mSplit:       uint16Ptr(163),
+			Strokes:             uint16Ptr(2),
+			StrokesPerMinute:    uint8Ptr(28),
+			WattsPreviousStroke: uint16Ptr(105),
+			CaloriesPerHour:     uint16Ptr(659),
 		}, {
 			ElapsedTime:         8,
 			Level:               4,
-			Distance:            uint64Ptr(21),
-			Time500mSplit:       uint64Ptr(148),
-			Strokes:             uint64Ptr(3),
-			StrokesPerMinute:    uint64Ptr(29),
-			WattsPreviousStroke: uint64Ptr(109),
-			CaloriesPerHour:     uint64Ptr(674),
+			Distance:            uint16Ptr(21),
+			Time500mSplit:       uint16Ptr(148),
+			Strokes:             uint16Ptr(3),
+			StrokesPerMinute:    uint8Ptr(29),
+			WattsPreviousStroke: uint16Ptr(109),
+			CaloriesPerHour:     uint16Ptr(674),
 		}, {
 			ElapsedTime:       2,
 			Level:             4,
-			RemainingDistance: uint64Ptr(0),
-			Time500mAverage:   uint64Ptr(0),
-			WattsAverage:      uint64Ptr(0),
-			CaloriesTotal:     uint64Ptr(0),
+			RemainingDistance: uint16Ptr(0),
+			Time500mAverage:   uint16Ptr(0),
+			WattsAverage:      uint16Ptr(0),
+			CaloriesTotal:     uint16Ptr(0),
 		}, {
 			ElapsedTime:         5,
 			Level:               4,
-			Distance:            uint64Ptr(8),
-			Time500mSplit:       uint64Ptr(319),
-			Strokes:             uint64Ptr(1),
-			StrokesPerMinute:    uint64Ptr(11),
-			WattsPreviousStroke: uint64Ptr(106),
-			CaloriesPerHour:     uint64Ptr(663),
+			Distance:            uint16Ptr(8),
+			Time500mSplit:       uint16Ptr(319),
+			Strokes:             uint16Ptr(1),
+			StrokesPerMinute:    uint8Ptr(11),
+			WattsPreviousStroke: uint16Ptr(106),
+			CaloriesPerHour:     uint16Ptr(663),
 		}, {
 			ElapsedTime:       1810,
 			Level:             4,
-			RemainingDistance: uint64Ptr(6015),
-			Time500mAverage:   uint64Ptr(153),
-			WattsAverage:      uint64Ptr(109),
-			CaloriesTotal:     uint64Ptr(400),
+			RemainingDistance: uint16Ptr(6015),
+			Time500mAverage:   uint16Ptr(153),
+			WattsAverage:      uint16Ptr(109),
+			CaloriesTotal:     uint16Ptr(400),
 		},
 	}
 

@@ -31,7 +31,7 @@ func (m *SerialMonitor) Run() {
 	m.stopChannel = &stopChan
 	defer close(stopChan)
 
-	strokes := uint64(0)
+	strokes := uint16(0)
 	isPausedOrStopped := false
 	lineChannel := m.createLineChannel(&stopChan)
 
