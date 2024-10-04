@@ -2,20 +2,12 @@ package serialmonitor
 
 import (
 	"bytes"
-	"fmt"
 	"reflect"
 	"testing"
-	"time"
 
 	"github.com/stefanjenkner/fdf-console-monitor/pkg/events"
-	"go.bug.st/serial"
+	"github.com/stefanjenkner/fdf-console-monitor/pkg/serialport_mock"
 )
-
-type MockSerialPort struct {
-	readBuffer  bytes.Buffer
-	writeBuffer bytes.Buffer
-	closed      int
-}
 
 type MockObserver struct {
 	dataEvents         []events.DataEvent
@@ -38,7 +30,7 @@ func TestSerialMonitor_RunCallsObserverForDataEvents(t *testing.T) {
 	// connection check
 	bufferString.WriteString("W\r\n")
 
-	mockSerialPort, port := NewMockSerialPort(bufferString)
+	mockSerialPort, port := serialport_mock.NewMockSerialPort(bufferString)
 	serialMonitor := SerialMonitor{
 		portName:  "/dev/mocked/serial/port",
 		port:      &port,
@@ -48,19 +40,13 @@ func TestSerialMonitor_RunCallsObserverForDataEvents(t *testing.T) {
 	serialMonitor.AddObserver(observer)
 	serialMonitor.Run()
 
-	uint8Ptr := func(v uint8) *uint8 {
-		return &v
-	}
-	uint16Ptr := func(v uint16) *uint16 {
-		return &v
-	}
 	wantedDataEvents := []events.DataEvent{
-		{ElapsedTime: 4, Level: 4, Distance: uint16Ptr(7), Time500mSplit: uint16Ptr(268), Strokes: uint16Ptr(1), StrokesPerMinute: uint8Ptr(14), WattsPreviousStroke: uint16Ptr(108), CaloriesPerHour: uint16Ptr(670)},
-		{ElapsedTime: 6, Level: 4, Distance: uint16Ptr(14), Time500mSplit: uint16Ptr(163), Strokes: uint16Ptr(2), StrokesPerMinute: uint8Ptr(28), WattsPreviousStroke: uint16Ptr(105), CaloriesPerHour: uint16Ptr(659)},
-		{ElapsedTime: 8, Level: 4, Distance: uint16Ptr(21), Time500mSplit: uint16Ptr(148), Strokes: uint16Ptr(3), StrokesPerMinute: uint8Ptr(29), WattsPreviousStroke: uint16Ptr(109), CaloriesPerHour: uint16Ptr(674)},
-		{ElapsedTime: 2, Level: 4, RemainingDistance: uint16Ptr(0), Time500mAverage: uint16Ptr(0), WattsAverage: uint16Ptr(0), CaloriesTotal: uint16Ptr(0)},
-		{ElapsedTime: 5, Level: 4, Distance: uint16Ptr(8), Time500mSplit: uint16Ptr(319), Strokes: uint16Ptr(1), StrokesPerMinute: uint8Ptr(11), WattsPreviousStroke: uint16Ptr(106), CaloriesPerHour: uint16Ptr(663)},
-		{ElapsedTime: 1810, Level: 4, RemainingDistance: uint16Ptr(6015), Time500mAverage: uint16Ptr(153), WattsAverage: uint16Ptr(109), CaloriesTotal: uint16Ptr(400)},
+		*events.NewDataEventBuilder(4, 4).SetDistance(7).SetTime500mSplit(268).SetStrokes(1).SetStrokesPerMinute(14).SetWattsPreviousStroke(108).SetCaloriesPerHour(670).Build(),
+		*events.NewDataEventBuilder(6, 4).SetDistance(14).SetTime500mSplit(163).SetStrokes(2).SetStrokesPerMinute(28).SetWattsPreviousStroke(105).SetCaloriesPerHour(659).Build(),
+		*events.NewDataEventBuilder(8, 4).SetDistance(21).SetTime500mSplit(148).SetStrokes(3).SetStrokesPerMinute(29).SetWattsPreviousStroke(109).SetCaloriesPerHour(674).Build(),
+		*events.NewDataEventBuilder(2, 4).SetRemainingDistance(0).SetTime500mAverage(0).SetWattsAverage(0).SetCaloriesTotal(0).Build(),
+		*events.NewDataEventBuilder(5, 4).SetDistance(8).SetTime500mSplit(319).SetStrokes(1).SetStrokesPerMinute(11).SetWattsPreviousStroke(106).SetCaloriesPerHour(663).Build(),
+		*events.NewDataEventBuilder(1810, 4).SetRemainingDistance(6015).SetTime500mAverage(153).SetWattsAverage(109).SetCaloriesTotal(400).Build(),
 	}
 
 	if got := len(observer.dataEvents); len(wantedDataEvents) != got {
@@ -74,7 +60,7 @@ func TestSerialMonitor_RunCallsObserverForDataEvents(t *testing.T) {
 		}
 	}
 
-	if got := mockSerialPort.closed; got != 1 {
+	if got := mockSerialPort.Closed; got != 1 {
 		t.Errorf("mockSerialPort.closed = %v, wantedDataEvents 1", got)
 	}
 }
@@ -95,7 +81,7 @@ func TestSerialMonitor_RunCallsObserverForStatusChangeEvents(t *testing.T) {
 	// connection check
 	bufferString.WriteString("W\r\n")
 
-	mockSerialPort, port := NewMockSerialPort(bufferString)
+	mockSerialPort, port := serialport_mock.NewMockSerialPort(bufferString)
 	serialMonitor := SerialMonitor{
 		portName:  "/dev/mocked/serial/port",
 		port:      &port,
@@ -121,7 +107,7 @@ func TestSerialMonitor_RunCallsObserverForStatusChangeEvents(t *testing.T) {
 			t.Errorf("statusChangeEvents() = %+v, wantedDataEvents %+v", got, wantedStatusChangeEvents[i])
 		}
 	}
-	if got := mockSerialPort.closed; got != 1 {
+	if got := mockSerialPort.Closed; got != 1 {
 		t.Errorf("mockSerialPort.closed = %v, wantedDataEvents 1", got)
 	}
 }
@@ -144,76 +130,10 @@ func NewMockObserver() *MockObserver {
 	return observer
 }
 
-func NewMockSerialPort(bufferString *bytes.Buffer) (*MockSerialPort, serial.Port) {
-	mockSerialPort := &MockSerialPort{
-		readBuffer:  *bufferString,
-		writeBuffer: bytes.Buffer{},
-	}
-	var port serial.Port = mockSerialPort
-	return mockSerialPort, port
-}
-
 func (m *MockObserver) OnData(event events.DataEvent) {
 	m.dataEvents = append(m.dataEvents, event)
 }
 
 func (m *MockObserver) OnStatusChange(event events.StatusChangeEvent) {
 	m.statusChangeEvents = append(m.statusChangeEvents, event)
-}
-
-func (m *MockSerialPort) Read(p []byte) (n int, err error) {
-	read, err := m.readBuffer.Read(p)
-	if err != nil {
-		return read, fmt.Errorf("read: unexpected error: %w", err)
-	}
-	return read, nil
-}
-
-func (m *MockSerialPort) Write(p []byte) (n int, err error) {
-	write, err := m.writeBuffer.Write(p)
-	if err != nil {
-		return 0, fmt.Errorf("write: unexpected error: %w", err)
-	}
-	return write, nil
-}
-
-func (m *MockSerialPort) Close() error {
-	m.closed++
-	return nil
-}
-
-func (m *MockSerialPort) SetMode(_ *serial.Mode) error {
-	panic("implement me")
-}
-
-func (m *MockSerialPort) Drain() error {
-	panic("implement me")
-}
-
-func (m *MockSerialPort) ResetInputBuffer() error {
-	panic("implement me")
-}
-
-func (m *MockSerialPort) ResetOutputBuffer() error {
-	panic("implement me")
-}
-
-func (m *MockSerialPort) SetDTR(_ bool) error {
-	panic("implement me")
-}
-
-func (m *MockSerialPort) SetRTS(_ bool) error {
-	panic("implement me")
-}
-
-func (m *MockSerialPort) GetModemStatusBits() (*serial.ModemStatusBits, error) {
-	panic("implement me")
-}
-
-func (m *MockSerialPort) SetReadTimeout(_ time.Duration) error {
-	panic("implement me")
-}
-
-func (m *MockSerialPort) Break(_ time.Duration) error {
-	panic("implement me")
 }
