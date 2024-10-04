@@ -9,7 +9,7 @@ linters:
   presets:
     - bugs
     - comment
-  #  - complexity
+    - complexity
     - error
   #  - format
     - import
@@ -20,6 +20,8 @@ linters:
   #  - test
     - unused
 linters-settings:
+  cyclop:
+    max-complexity: 12
   depguard:
     rules:
       main:
@@ -29,3 +31,5 @@ linters-settings:
           - $gostd
           - github.com/go-ble/ble
           - github.com/stefanjenkner/fdf-console-monitor
+  funlen:
+    ignore-comments: true

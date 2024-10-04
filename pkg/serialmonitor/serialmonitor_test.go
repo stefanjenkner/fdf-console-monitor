@@ -22,7 +22,7 @@ type MockObserver struct {
 	statusChangeEvents []events.StatusChangeEvent
 }
 
-func TestSerialMonitor_Run(t *testing.T) {
+func TestSerialMonitor_RunCallsObserverForDataEvents(t *testing.T) {
 	bufferString := bytes.NewBufferString("")
 	// session one
 	bufferString.WriteString("A8000040000710428014108067004\r\n")
@@ -38,20 +38,13 @@ func TestSerialMonitor_Run(t *testing.T) {
 	// connection check
 	bufferString.WriteString("W\r\n")
 
-	mockSerialPort := MockSerialPort{
-		readBuffer:  *bufferString,
-		writeBuffer: bytes.Buffer{},
-	}
-	var port serial.Port = &mockSerialPort
+	mockSerialPort, port := NewMockSerialPort(bufferString)
 	serialMonitor := SerialMonitor{
 		portName:  "/dev/mocked/serial/port",
 		port:      &port,
 		observers: map[events.Observer]struct{}{},
 	}
-	observer := &MockObserver{
-		dataEvents:         make([]events.DataEvent, 0),
-		statusChangeEvents: make([]events.StatusChangeEvent, 0),
-	}
+	observer := NewMockObserver()
 	serialMonitor.AddObserver(observer)
 	serialMonitor.Run()
 
@@ -62,57 +55,12 @@ func TestSerialMonitor_Run(t *testing.T) {
 		return &v
 	}
 	wantedDataEvents := []events.DataEvent{
-		{
-			ElapsedTime:         4,
-			Level:               4,
-			Distance:            uint16Ptr(7),
-			Time500mSplit:       uint16Ptr(268),
-			Strokes:             uint16Ptr(1),
-			StrokesPerMinute:    uint8Ptr(14),
-			WattsPreviousStroke: uint16Ptr(108),
-			CaloriesPerHour:     uint16Ptr(670),
-		}, {
-			ElapsedTime:         6,
-			Level:               4,
-			Distance:            uint16Ptr(14),
-			Time500mSplit:       uint16Ptr(163),
-			Strokes:             uint16Ptr(2),
-			StrokesPerMinute:    uint8Ptr(28),
-			WattsPreviousStroke: uint16Ptr(105),
-			CaloriesPerHour:     uint16Ptr(659),
-		}, {
-			ElapsedTime:         8,
-			Level:               4,
-			Distance:            uint16Ptr(21),
-			Time500mSplit:       uint16Ptr(148),
-			Strokes:             uint16Ptr(3),
-			StrokesPerMinute:    uint8Ptr(29),
-			WattsPreviousStroke: uint16Ptr(109),
-			CaloriesPerHour:     uint16Ptr(674),
-		}, {
-			ElapsedTime:       2,
-			Level:             4,
-			RemainingDistance: uint16Ptr(0),
-			Time500mAverage:   uint16Ptr(0),
-			WattsAverage:      uint16Ptr(0),
-			CaloriesTotal:     uint16Ptr(0),
-		}, {
-			ElapsedTime:         5,
-			Level:               4,
-			Distance:            uint16Ptr(8),
-			Time500mSplit:       uint16Ptr(319),
-			Strokes:             uint16Ptr(1),
-			StrokesPerMinute:    uint8Ptr(11),
-			WattsPreviousStroke: uint16Ptr(106),
-			CaloriesPerHour:     uint16Ptr(663),
-		}, {
-			ElapsedTime:       1810,
-			Level:             4,
-			RemainingDistance: uint16Ptr(6015),
-			Time500mAverage:   uint16Ptr(153),
-			WattsAverage:      uint16Ptr(109),
-			CaloriesTotal:     uint16Ptr(400),
-		},
+		{ElapsedTime: 4, Level: 4, Distance: uint16Ptr(7), Time500mSplit: uint16Ptr(268), Strokes: uint16Ptr(1), StrokesPerMinute: uint8Ptr(14), WattsPreviousStroke: uint16Ptr(108), CaloriesPerHour: uint16Ptr(670)},
+		{ElapsedTime: 6, Level: 4, Distance: uint16Ptr(14), Time500mSplit: uint16Ptr(163), Strokes: uint16Ptr(2), StrokesPerMinute: uint8Ptr(28), WattsPreviousStroke: uint16Ptr(105), CaloriesPerHour: uint16Ptr(659)},
+		{ElapsedTime: 8, Level: 4, Distance: uint16Ptr(21), Time500mSplit: uint16Ptr(148), Strokes: uint16Ptr(3), StrokesPerMinute: uint8Ptr(29), WattsPreviousStroke: uint16Ptr(109), CaloriesPerHour: uint16Ptr(674)},
+		{ElapsedTime: 2, Level: 4, RemainingDistance: uint16Ptr(0), Time500mAverage: uint16Ptr(0), WattsAverage: uint16Ptr(0), CaloriesTotal: uint16Ptr(0)},
+		{ElapsedTime: 5, Level: 4, Distance: uint16Ptr(8), Time500mSplit: uint16Ptr(319), Strokes: uint16Ptr(1), StrokesPerMinute: uint8Ptr(11), WattsPreviousStroke: uint16Ptr(106), CaloriesPerHour: uint16Ptr(663)},
+		{ElapsedTime: 1810, Level: 4, RemainingDistance: uint16Ptr(6015), Time500mAverage: uint16Ptr(153), WattsAverage: uint16Ptr(109), CaloriesTotal: uint16Ptr(400)},
 	}
 
 	if got := len(observer.dataEvents); len(wantedDataEvents) != got {
@@ -125,6 +73,37 @@ func TestSerialMonitor_Run(t *testing.T) {
 			t.Errorf("dataEvents() = %+v, wantedDataEvents %+v", got, wantedDataEvents[i])
 		}
 	}
+
+	if got := mockSerialPort.closed; got != 1 {
+		t.Errorf("mockSerialPort.closed = %v, wantedDataEvents 1", got)
+	}
+}
+
+func TestSerialMonitor_RunCallsObserverForStatusChangeEvents(t *testing.T) {
+	bufferString := bytes.NewBufferString("")
+	// session one
+	bufferString.WriteString("A8000040000710428014108067004\r\n")
+	bufferString.WriteString("A8000060001410243028105065904\r\n")
+	bufferString.WriteString("A8000080002110228029109067404\r\n")
+	// reset
+	bufferString.WriteString("R\r\n")
+	// session two
+	bufferString.WriteString("A8000020000010000000000000004\r\n")
+	bufferString.WriteString("A8000050000810519011106066304\r\n")
+	// ... skip some
+	bufferString.WriteString("A8030100601510233000109040004\r\n")
+	// connection check
+	bufferString.WriteString("W\r\n")
+
+	mockSerialPort, port := NewMockSerialPort(bufferString)
+	serialMonitor := SerialMonitor{
+		portName:  "/dev/mocked/serial/port",
+		port:      &port,
+		observers: map[events.Observer]struct{}{},
+	}
+	observer := NewMockObserver()
+	serialMonitor.AddObserver(observer)
+	serialMonitor.Run()
 
 	wantedStatusChangeEvents := []events.StatusChangeEvent{
 		{StatusChange: events.Started},
@@ -142,7 +121,6 @@ func TestSerialMonitor_Run(t *testing.T) {
 			t.Errorf("statusChangeEvents() = %+v, wantedDataEvents %+v", got, wantedStatusChangeEvents[i])
 		}
 	}
-
 	if got := mockSerialPort.closed; got != 1 {
 		t.Errorf("mockSerialPort.closed = %v, wantedDataEvents 1", got)
 	}
@@ -156,6 +134,23 @@ func TestSerialMonitor_NewSerialMonitor(t *testing.T) {
 	if got := NewSerialMonitor("/any/port/name"); !reflect.DeepEqual(got, want) {
 		t.Errorf("NewSerialMonitor() = %v, want %v", got, want)
 	}
+}
+
+func NewMockObserver() *MockObserver {
+	observer := &MockObserver{
+		dataEvents:         make([]events.DataEvent, 0),
+		statusChangeEvents: make([]events.StatusChangeEvent, 0),
+	}
+	return observer
+}
+
+func NewMockSerialPort(bufferString *bytes.Buffer) (*MockSerialPort, serial.Port) {
+	var mockSerialPort = MockSerialPort{
+		readBuffer:  *bufferString,
+		writeBuffer: bytes.Buffer{},
+	}
+	var port serial.Port = &mockSerialPort
+	return &mockSerialPort, port
 }
 
 func (m *MockObserver) OnData(event events.DataEvent) {

@@ -70,6 +70,7 @@ func (f *FitnessMachine) Stop() {
 	log.Println("Stopped FitnessMachine")
 }
 
+//cyclop:ignore
 func (f *FitnessMachine) rowerDataNotifyHandler(_ ble.Request, n ble.Notifier) {
 	log.Println("Subscription started")
 
@@ -107,45 +108,31 @@ func (f *FitnessMachine) rowerDataNotifyHandler(_ ble.Request, n ble.Notifier) {
 
 			// Bit 0 - Stroke rate and Stroke count (1 if NOT present)
 			if dataEvent.StrokesPerMinute != nil && dataEvent.Strokes != nil {
-				strokeRate := uint8(*(dataEvent.StrokesPerMinute) * 2)
-				featureData = append(featureData, strokeRate)
-				strokeCount := make([]byte, 2)
-				binary.LittleEndian.PutUint16(strokeCount, *dataEvent.Strokes)
-				featureData = append(featureData, strokeCount...)
+				featureData = appendUint8(featureData, *(dataEvent.StrokesPerMinute)*2)
+				featureData = appendUint16(featureData, *dataEvent.Strokes)
 				featureData[0] ^= 1 << 0
 			}
 
 			// Bit 2 - Total Distance
 			if dataEvent.Distance != nil {
-				distance := *dataEvent.Distance
-				totalDistance := make([]byte, 3)
-				totalDistance[0] = byte(distance & 255)
-				totalDistance[1] = byte((distance >> 8) & 255)
-				totalDistance[2] = 0
-				featureData = append(featureData, totalDistance...)
+				featureData = appendUint24(featureData, *dataEvent.Distance)
 				featureData[0] |= 4
 			}
 
 			// Bit 3 - Instantaneous Pace
 			if dataEvent.Time500mSplit != nil {
-				instantaneousPace := make([]byte, 2)
-				binary.LittleEndian.PutUint16(instantaneousPace, *dataEvent.Time500mSplit)
-				featureData = append(featureData, instantaneousPace...)
+				featureData = appendUint16(featureData, *dataEvent.Time500mSplit)
 				featureData[0] |= 8
 			}
 
 			// Bit 5 - Instantaneous Power
 			if dataEvent.WattsPreviousStroke != nil {
-				instantaneousPower := make([]byte, 2)
-				binary.LittleEndian.PutUint16(instantaneousPower, *dataEvent.WattsPreviousStroke)
-				featureData = append(featureData, instantaneousPower...)
+				featureData = appendUint16(featureData, *dataEvent.WattsPreviousStroke)
 				featureData[0] |= 32
 			}
 
 			// Bit 11 - Elapsed Time in seconds
-			elapsedTime := make([]byte, 2)
-			binary.LittleEndian.PutUint16(elapsedTime, dataEvent.ElapsedTime)
-			featureData = append(featureData, elapsedTime...)
+			featureData = appendUint16(featureData, dataEvent.ElapsedTime)
 			featureData[1] |= 8
 
 			_, err := n.Write(featureData)
@@ -194,4 +181,22 @@ func (f *FitnessMachine) OnData(event events.DataEvent) {
 
 func (f *FitnessMachine) OnStatusChange(event events.StatusChangeEvent) {
 	log.Printf("OnStatusChangeEvent: %+v\n", event)
+}
+
+func appendUint8(slice []byte, v uint8) []byte {
+	return append(slice, v)
+}
+
+func appendUint16(slice []byte, v uint16) []byte {
+	bytes := make([]byte, 2)
+	binary.LittleEndian.PutUint16(bytes, v)
+	return append(slice, bytes...)
+}
+
+func appendUint24(slice []byte, v uint16) []byte {
+	bytes := make([]byte, 3)
+	bytes[0] = byte(v & 255)
+	bytes[1] = byte((v >> 8) & 255)
+	bytes[2] = 0
+	return append(slice, bytes...)
 }
