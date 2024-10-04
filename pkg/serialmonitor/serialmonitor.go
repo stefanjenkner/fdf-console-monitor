@@ -7,20 +7,21 @@ import (
 	"strings"
 
 	"github.com/stefanjenkner/fdf-console-monitor/pkg/events"
+	"github.com/stefanjenkner/fdf-console-monitor/pkg/observer"
 	"go.bug.st/serial"
 )
 
 type SerialMonitor struct {
 	portName    string
 	port        *serial.Port
-	observers   map[events.Observer]struct{}
+	observers   map[observer.Observer]struct{}
 	stopChannel *chan struct{}
 }
 
 func NewSerialMonitor(portName string) *SerialMonitor {
 	return &SerialMonitor{
 		portName:  portName,
-		observers: make(map[events.Observer]struct{}),
+		observers: make(map[observer.Observer]struct{}),
 	}
 }
 
@@ -139,19 +140,19 @@ func (m *SerialMonitor) Stop() {
 	}
 }
 
-func (m *SerialMonitor) AddObserver(observer events.Observer) {
-	m.observers[observer] = struct{}{}
+func (m *SerialMonitor) AddObserver(o observer.Observer) {
+	m.observers[o] = struct{}{}
 }
 
 func (m *SerialMonitor) emitDataEvent(event events.DataEvent) {
-	for observer := range m.observers {
-		observer.OnData(event)
+	for o := range m.observers {
+		o.OnData(event)
 	}
 }
 
 func (m *SerialMonitor) emitStatusChangeEvent(event events.StatusChangeEvent) {
-	for observer := range m.observers {
-		observer.OnStatusChange(event)
+	for o := range m.observers {
+		o.OnStatusChange(event)
 	}
 }
 

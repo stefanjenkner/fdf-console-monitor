@@ -6,13 +6,10 @@ import (
 	"testing"
 
 	"github.com/stefanjenkner/fdf-console-monitor/pkg/events"
+	"github.com/stefanjenkner/fdf-console-monitor/pkg/observer"
+	"github.com/stefanjenkner/fdf-console-monitor/pkg/observer_mock"
 	"github.com/stefanjenkner/fdf-console-monitor/pkg/serialport_mock"
 )
-
-type MockObserver struct {
-	dataEvents         []events.DataEvent
-	statusChangeEvents []events.StatusChangeEvent
-}
 
 func TestSerialMonitor_RunCallsObserverForDataEvents(t *testing.T) {
 	bufferString := bytes.NewBufferString("")
@@ -34,10 +31,10 @@ func TestSerialMonitor_RunCallsObserverForDataEvents(t *testing.T) {
 	serialMonitor := SerialMonitor{
 		portName:  "/dev/mocked/serial/port",
 		port:      &port,
-		observers: map[events.Observer]struct{}{},
+		observers: map[observer.Observer]struct{}{},
 	}
-	observer := NewMockObserver()
-	serialMonitor.AddObserver(observer)
+	mockObserver := observer_mock.NewMockObserver()
+	serialMonitor.AddObserver(mockObserver)
 	serialMonitor.Run()
 
 	wantedDataEvents := []events.DataEvent{
@@ -49,13 +46,13 @@ func TestSerialMonitor_RunCallsObserverForDataEvents(t *testing.T) {
 		*events.NewDataEventBuilder(1810, 4).SetRemainingDistance(6015).SetTime500mAverage(153).SetWattsAverage(109).SetCaloriesTotal(400).Build(),
 	}
 
-	if got := len(observer.dataEvents); len(wantedDataEvents) != got {
+	if got := len(mockObserver.DataEvents); len(wantedDataEvents) != got {
 		t.Errorf("# dataEvents = %v, wantedDataEvents %v", got, len(wantedDataEvents))
 		t.FailNow()
 	}
 
-	for i := 0; i < len(observer.dataEvents); i++ {
-		if got := observer.dataEvents[i]; !reflect.DeepEqual(got, wantedDataEvents[i]) {
+	for i := 0; i < len(mockObserver.DataEvents); i++ {
+		if got := mockObserver.DataEvents[i]; !reflect.DeepEqual(got, wantedDataEvents[i]) {
 			t.Errorf("dataEvents() = %+v, wantedDataEvents %+v", got, wantedDataEvents[i])
 		}
 	}
@@ -85,10 +82,10 @@ func TestSerialMonitor_RunCallsObserverForStatusChangeEvents(t *testing.T) {
 	serialMonitor := SerialMonitor{
 		portName:  "/dev/mocked/serial/port",
 		port:      &port,
-		observers: map[events.Observer]struct{}{},
+		observers: map[observer.Observer]struct{}{},
 	}
-	observer := NewMockObserver()
-	serialMonitor.AddObserver(observer)
+	mockObserver := observer_mock.NewMockObserver()
+	serialMonitor.AddObserver(mockObserver)
 	serialMonitor.Run()
 
 	wantedStatusChangeEvents := []events.StatusChangeEvent{
@@ -98,12 +95,12 @@ func TestSerialMonitor_RunCallsObserverForStatusChangeEvents(t *testing.T) {
 		{StatusChange: events.Resumed},
 		{StatusChange: events.PausedOrStopped},
 	}
-	if got := len(observer.statusChangeEvents); len(wantedStatusChangeEvents) != got {
+	if got := len(mockObserver.StatusChangeEvents); len(wantedStatusChangeEvents) != got {
 		t.Errorf("# statusChangeEvents = %v, wantedDataEvents %v", got, len(wantedStatusChangeEvents))
 		t.FailNow()
 	}
-	for i := 0; i < len(observer.statusChangeEvents); i++ {
-		if got := observer.statusChangeEvents[i]; !reflect.DeepEqual(got, wantedStatusChangeEvents[i]) {
+	for i := 0; i < len(mockObserver.StatusChangeEvents); i++ {
+		if got := mockObserver.StatusChangeEvents[i]; !reflect.DeepEqual(got, wantedStatusChangeEvents[i]) {
 			t.Errorf("statusChangeEvents() = %+v, wantedDataEvents %+v", got, wantedStatusChangeEvents[i])
 		}
 	}
@@ -115,25 +112,9 @@ func TestSerialMonitor_RunCallsObserverForStatusChangeEvents(t *testing.T) {
 func TestSerialMonitor_NewSerialMonitor(t *testing.T) {
 	want := &SerialMonitor{
 		portName:  "/any/port/name",
-		observers: make(map[events.Observer]struct{}),
+		observers: make(map[observer.Observer]struct{}),
 	}
 	if got := NewSerialMonitor("/any/port/name"); !reflect.DeepEqual(got, want) {
 		t.Errorf("NewSerialMonitor() = %v, want %v", got, want)
 	}
-}
-
-func NewMockObserver() *MockObserver {
-	observer := &MockObserver{
-		dataEvents:         make([]events.DataEvent, 0),
-		statusChangeEvents: make([]events.StatusChangeEvent, 0),
-	}
-	return observer
-}
-
-func (m *MockObserver) OnData(event events.DataEvent) {
-	m.dataEvents = append(m.dataEvents, event)
-}
-
-func (m *MockObserver) OnStatusChange(event events.StatusChangeEvent) {
-	m.statusChangeEvents = append(m.statusChangeEvents, event)
 }
