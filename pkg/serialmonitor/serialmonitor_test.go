@@ -5,10 +5,9 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/stefanjenkner/fdf-console-monitor/mocks"
 	"github.com/stefanjenkner/fdf-console-monitor/pkg/events"
 	"github.com/stefanjenkner/fdf-console-monitor/pkg/observer"
-	"github.com/stefanjenkner/fdf-console-monitor/pkg/observer_mock"
-	"github.com/stefanjenkner/fdf-console-monitor/pkg/serialport_mock"
 )
 
 func TestSerialMonitor_RunCallsObserverForDataEvents(t *testing.T) {
@@ -27,13 +26,13 @@ func TestSerialMonitor_RunCallsObserverForDataEvents(t *testing.T) {
 	// connection check
 	bufferString.WriteString("W\r\n")
 
-	mockSerialPort, port := serialport_mock.NewMockSerialPort(bufferString)
+	mockSerialPort, port := mocks.NewMockSerialPort(bufferString)
 	serialMonitor := SerialMonitor{
 		portName:  "/dev/mocked/serial/port",
 		port:      &port,
 		observers: map[observer.Observer]struct{}{},
 	}
-	mockObserver := observer_mock.NewMockObserver()
+	mockObserver := mocks.NewMockObserver()
 	serialMonitor.AddObserver(mockObserver)
 	serialMonitor.Run()
 
@@ -78,13 +77,13 @@ func TestSerialMonitor_RunCallsObserverForStatusChangeEvents(t *testing.T) {
 	// connection check
 	bufferString.WriteString("W\r\n")
 
-	mockSerialPort, port := serialport_mock.NewMockSerialPort(bufferString)
+	mockSerialPort, port := mocks.NewMockSerialPort(bufferString)
 	serialMonitor := SerialMonitor{
 		portName:  "/dev/mocked/serial/port",
 		port:      &port,
 		observers: map[observer.Observer]struct{}{},
 	}
-	mockObserver := observer_mock.NewMockObserver()
+	mockObserver := mocks.NewMockObserver()
 	serialMonitor.AddObserver(mockObserver)
 	serialMonitor.Run()
 

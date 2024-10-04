@@ -1,4 +1,4 @@
-package serialport_mock
+package mocks
 
 import (
 	"bytes"

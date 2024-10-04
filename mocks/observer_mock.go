@@ -1,4 +1,6 @@
-package observer_mock
+package mocks
+
+//go:
 
 import (
 	"github.com/stefanjenkner/fdf-console-monitor/pkg/events"
