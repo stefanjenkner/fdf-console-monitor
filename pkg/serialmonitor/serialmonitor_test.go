@@ -145,12 +145,12 @@ func NewMockObserver() *MockObserver {
 }
 
 func NewMockSerialPort(bufferString *bytes.Buffer) (*MockSerialPort, serial.Port) {
-	var mockSerialPort = MockSerialPort{
+	mockSerialPort := &MockSerialPort{
 		readBuffer:  *bufferString,
 		writeBuffer: bytes.Buffer{},
 	}
-	var port serial.Port = &mockSerialPort
-	return &mockSerialPort, port
+	var port serial.Port = mockSerialPort
+	return mockSerialPort, port
 }
 
 func (m *MockObserver) OnData(event events.DataEvent) {
