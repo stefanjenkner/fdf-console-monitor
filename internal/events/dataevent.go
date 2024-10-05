@@ -14,70 +14,77 @@ type DataEvent struct {
 	CaloriesPerHour     *uint16
 	CaloriesTotal       *uint16
 }
+type DataEventOption func(*DataEvent)
 
-type DataEventBuilder struct {
-	dataEvent *DataEvent
+func NewDataEvent(elapsedTime uint16, level uint8, opts ...DataEventOption) *DataEvent {
+	e := &DataEvent{
+		ElapsedTime: elapsedTime,
+		Level:       level,
+	}
+
+	for _, opt := range opts {
+		opt(e)
+	}
+
+	return e
 }
 
-func NewDataEventBuilder(ElapsedTime uint16, Level uint8) *DataEventBuilder {
-	return &DataEventBuilder{
-		&DataEvent{
-			ElapsedTime: ElapsedTime,
-			Level:       Level,
-		},
+func WithDistance(distance uint16) DataEventOption {
+	return func(e *DataEvent) {
+		e.Distance = &distance
 	}
 }
 
-func (b *DataEventBuilder) SetDistance(distance uint16) *DataEventBuilder {
-	b.dataEvent.Distance = &distance
-	return b
+func WithRemainingDistance(remainingDistance uint16) DataEventOption {
+	return func(e *DataEvent) {
+		e.RemainingDistance = &remainingDistance
+	}
 }
 
-func (b *DataEventBuilder) SetRemainingDistance(remainingDistance uint16) *DataEventBuilder {
-	b.dataEvent.RemainingDistance = &remainingDistance
-	return b
+func WithTime500mSplit(time500mSplit uint16) DataEventOption {
+	return func(e *DataEvent) {
+		e.Time500mSplit = &time500mSplit
+	}
 }
 
-func (b *DataEventBuilder) SetTime500mSplit(time500mSplit uint16) *DataEventBuilder {
-	b.dataEvent.Time500mSplit = &time500mSplit
-	return b
+func WithTime500mAverage(time500mAverage uint16) DataEventOption {
+	return func(e *DataEvent) {
+		e.Time500mAverage = &time500mAverage
+	}
 }
 
-func (b *DataEventBuilder) SetTime500mAverage(time500mAverage uint16) *DataEventBuilder {
-	b.dataEvent.Time500mAverage = &time500mAverage
-	return b
+func WithStrokes(strokes uint16) DataEventOption {
+	return func(e *DataEvent) {
+		e.Strokes = &strokes
+	}
 }
 
-func (b *DataEventBuilder) SetStrokes(strokes uint16) *DataEventBuilder {
-	b.dataEvent.Strokes = &strokes
-	return b
+func WithStrokesPerMinute(strokesPerMinute uint8) DataEventOption {
+	return func(e *DataEvent) {
+		e.StrokesPerMinute = &strokesPerMinute
+	}
 }
 
-func (b *DataEventBuilder) SetStrokesPerMinute(strokesPerMinute uint8) *DataEventBuilder {
-	b.dataEvent.StrokesPerMinute = &strokesPerMinute
-	return b
+func WithWattsPreviousStroke(wattsPreviousStroke uint16) DataEventOption {
+	return func(e *DataEvent) {
+		e.WattsPreviousStroke = &wattsPreviousStroke
+	}
 }
 
-func (b *DataEventBuilder) SetWattsPreviousStroke(wattsPreviousStroke uint16) *DataEventBuilder {
-	b.dataEvent.WattsPreviousStroke = &wattsPreviousStroke
-	return b
+func WithWattsAverage(wattsAverage uint16) DataEventOption {
+	return func(e *DataEvent) {
+		e.WattsAverage = &wattsAverage
+	}
 }
 
-func (b *DataEventBuilder) SetWattsAverage(wattsAverage uint16) *DataEventBuilder {
-	b.dataEvent.WattsAverage = &wattsAverage
-	return b
+func WithCaloriesPerHour(caloriesPerHour uint16) DataEventOption {
+	return func(e *DataEvent) {
+		e.CaloriesPerHour = &caloriesPerHour
+	}
 }
 
-func (b *DataEventBuilder) SetCaloriesPerHour(caloriesPerHour uint16) *DataEventBuilder {
-	b.dataEvent.CaloriesPerHour = &caloriesPerHour
-	return b
-}
-
-func (b *DataEventBuilder) SetCaloriesTotal(caloriesTotal uint16) *DataEventBuilder {
-	b.dataEvent.CaloriesTotal = &caloriesTotal
-	return b
-}
-
-func (b *DataEventBuilder) Build() *DataEvent {
-	return b.dataEvent
+func WithCaloriesTotal(caloriesTotal uint16) DataEventOption {
+	return func(e *DataEvent) {
+		e.CaloriesTotal = &caloriesTotal
+	}
 }

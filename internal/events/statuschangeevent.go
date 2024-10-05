@@ -13,3 +13,7 @@ const (
 type StatusChangeEvent struct {
 	StatusChange StatusChange
 }
+
+func NewStatusChangeEvent(statusChange StatusChange) *StatusChangeEvent {
+	return &StatusChangeEvent{StatusChange: statusChange}
+}

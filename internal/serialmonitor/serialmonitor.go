@@ -42,30 +42,32 @@ func (m *SerialMonitor) Run() {
 		case strings.HasPrefix(line, "A"):
 			capture := parse(line)
 			if capture.strokesPerMinute == 0 {
-				m.emitStatusChangeEvent(events.StatusChangeEvent{StatusChange: events.PausedOrStopped})
+				m.emitStatusChangeEvent(*events.NewStatusChangeEvent(events.PausedOrStopped))
 				isPausedOrStopped = true
 			} else if isPausedOrStopped {
-				m.emitStatusChangeEvent(events.StatusChangeEvent{StatusChange: events.Resumed})
+				m.emitStatusChangeEvent(*events.NewStatusChangeEvent(events.Resumed))
 				isPausedOrStopped = false
 			} else if strokes == 0 {
-				m.emitStatusChangeEvent(events.StatusChangeEvent{StatusChange: events.Started})
+				m.emitStatusChangeEvent(*events.NewStatusChangeEvent(events.Started))
 			}
-			builder := events.NewDataEventBuilder(capture.elapsedTime, capture.level)
 			if isPausedOrStopped {
-				builder.SetRemainingDistance(capture.distance)
-				builder.SetTime500mAverage(capture.time500m)
-				builder.SetWattsAverage(capture.watts)
-				builder.SetCaloriesTotal(capture.cals)
+				m.emitDataEvent(*events.NewDataEvent(capture.elapsedTime, capture.level,
+					events.WithRemainingDistance(capture.distance),
+					events.WithTime500mAverage(capture.time500m),
+					events.WithWattsAverage(capture.watts),
+					events.WithCaloriesTotal(capture.cals),
+				))
 			} else {
 				strokes++
-				builder.SetDistance(capture.distance)
-				builder.SetStrokes(strokes)
-				builder.SetStrokesPerMinute(capture.strokesPerMinute)
-				builder.SetTime500mSplit(capture.time500m)
-				builder.SetWattsPreviousStroke(capture.watts)
-				builder.SetCaloriesPerHour(capture.cals)
+				m.emitDataEvent(*events.NewDataEvent(capture.elapsedTime, capture.level,
+					events.WithDistance(capture.distance),
+					events.WithStrokes(strokes),
+					events.WithStrokesPerMinute(capture.strokesPerMinute),
+					events.WithTime500mSplit(capture.time500m),
+					events.WithWattsPreviousStroke(capture.watts),
+					events.WithCaloriesPerHour(capture.cals),
+				))
 			}
-			m.emitDataEvent(*builder.Build())
 
 		case strings.HasPrefix(line, "W"):
 			if err := m.writeLine("K"); err != nil {
@@ -73,7 +75,7 @@ func (m *SerialMonitor) Run() {
 			}
 
 		case strings.HasPrefix(line, "R"):
-			m.emitStatusChangeEvent(events.StatusChangeEvent{StatusChange: events.Reset})
+			m.emitStatusChangeEvent(*events.NewStatusChangeEvent(events.Reset))
 			isPausedOrStopped = false
 			strokes = 0
 		}

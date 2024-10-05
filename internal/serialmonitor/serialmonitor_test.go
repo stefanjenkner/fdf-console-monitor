@@ -37,12 +37,29 @@ func TestSerialMonitor_RunCallsObserverForDataEvents(t *testing.T) {
 	serialMonitor.Run()
 
 	wantedDataEvents := []events.DataEvent{
-		*events.NewDataEventBuilder(4, 4).SetDistance(7).SetTime500mSplit(268).SetStrokes(1).SetStrokesPerMinute(14).SetWattsPreviousStroke(108).SetCaloriesPerHour(670).Build(),
-		*events.NewDataEventBuilder(6, 4).SetDistance(14).SetTime500mSplit(163).SetStrokes(2).SetStrokesPerMinute(28).SetWattsPreviousStroke(105).SetCaloriesPerHour(659).Build(),
-		*events.NewDataEventBuilder(8, 4).SetDistance(21).SetTime500mSplit(148).SetStrokes(3).SetStrokesPerMinute(29).SetWattsPreviousStroke(109).SetCaloriesPerHour(674).Build(),
-		*events.NewDataEventBuilder(2, 4).SetRemainingDistance(0).SetTime500mAverage(0).SetWattsAverage(0).SetCaloriesTotal(0).Build(),
-		*events.NewDataEventBuilder(5, 4).SetDistance(8).SetTime500mSplit(319).SetStrokes(1).SetStrokesPerMinute(11).SetWattsPreviousStroke(106).SetCaloriesPerHour(663).Build(),
-		*events.NewDataEventBuilder(1810, 4).SetRemainingDistance(6015).SetTime500mAverage(153).SetWattsAverage(109).SetCaloriesTotal(400).Build(),
+		*events.NewDataEvent(4, 4, events.WithDistance(7), events.WithTime500mSplit(268),
+			events.WithStrokes(1), events.WithStrokesPerMinute(14), events.WithWattsPreviousStroke(108),
+			events.WithCaloriesPerHour(670),
+		),
+		*events.NewDataEvent(6, 4, events.WithDistance(14), events.WithTime500mSplit(163),
+			events.WithStrokes(2), events.WithStrokesPerMinute(28), events.WithWattsPreviousStroke(105),
+			events.WithCaloriesPerHour(659),
+		),
+		*events.NewDataEvent(8, 4, events.WithDistance(21), events.WithTime500mSplit(148),
+			events.WithStrokes(3), events.WithStrokesPerMinute(29), events.WithWattsPreviousStroke(109),
+			events.WithCaloriesPerHour(674),
+		),
+		*events.NewDataEvent(2, 4, events.WithRemainingDistance(0), events.WithTime500mAverage(0),
+			events.WithWattsAverage(0), events.WithCaloriesTotal(0),
+		),
+		*events.NewDataEvent(5, 4, events.WithDistance(8), events.WithTime500mSplit(319),
+			events.WithStrokes(1), events.WithStrokesPerMinute(11), events.WithWattsPreviousStroke(106),
+			events.WithCaloriesPerHour(663),
+		),
+		*events.NewDataEvent(1810, 4, events.WithRemainingDistance(6015), events.WithTime500mAverage(153),
+			events.WithWattsAverage(109),
+			events.WithCaloriesTotal(400),
+		),
 	}
 
 	if got := len(mockObserver.DataEvents); len(wantedDataEvents) != got {
@@ -88,11 +105,11 @@ func TestSerialMonitor_RunCallsObserverForStatusChangeEvents(t *testing.T) {
 	serialMonitor.Run()
 
 	wantedStatusChangeEvents := []events.StatusChangeEvent{
-		{StatusChange: events.Started},
-		{StatusChange: events.Reset},
-		{StatusChange: events.PausedOrStopped},
-		{StatusChange: events.Resumed},
-		{StatusChange: events.PausedOrStopped},
+		*events.NewStatusChangeEvent(events.Started),
+		*events.NewStatusChangeEvent(events.Reset),
+		*events.NewStatusChangeEvent(events.PausedOrStopped),
+		*events.NewStatusChangeEvent(events.Resumed),
+		*events.NewStatusChangeEvent(events.PausedOrStopped),
 	}
 	if got := len(mockObserver.StatusChangeEvents); len(wantedStatusChangeEvents) != got {
 		t.Errorf("# statusChangeEvents = %v, wantedDataEvents %v", got, len(wantedStatusChangeEvents))
