@@ -6,21 +6,22 @@ import (
 	"log"
 	"strings"
 
-	"github.com/stefanjenkner/fdf-console-monitor/pkg/events"
+	"github.com/stefanjenkner/fdf-console-monitor/internal/events"
+	"github.com/stefanjenkner/fdf-console-monitor/internal/observer"
 	"go.bug.st/serial"
 )
 
 type SerialMonitor struct {
 	portName    string
 	port        *serial.Port
-	observers   map[events.Observer]struct{}
+	observers   map[observer.Observer]struct{}
 	stopChannel *chan struct{}
 }
 
 func NewSerialMonitor(portName string) *SerialMonitor {
 	return &SerialMonitor{
 		portName:  portName,
-		observers: make(map[events.Observer]struct{}),
+		observers: make(map[observer.Observer]struct{}),
 	}
 }
 
@@ -41,30 +42,32 @@ func (m *SerialMonitor) Run() {
 		case strings.HasPrefix(line, "A"):
 			capture := parse(line)
 			if capture.strokesPerMinute == 0 {
-				m.emitStatusChangeEvent(events.StatusChangeEvent{StatusChange: events.PausedOrStopped})
+				m.emitStatusChangeEvent(*events.NewStatusChangeEvent(events.PausedOrStopped))
 				isPausedOrStopped = true
 			} else if isPausedOrStopped {
-				m.emitStatusChangeEvent(events.StatusChangeEvent{StatusChange: events.Resumed})
+				m.emitStatusChangeEvent(*events.NewStatusChangeEvent(events.Resumed))
 				isPausedOrStopped = false
 			} else if strokes == 0 {
-				m.emitStatusChangeEvent(events.StatusChangeEvent{StatusChange: events.Started})
+				m.emitStatusChangeEvent(*events.NewStatusChangeEvent(events.Started))
 			}
-			builder := events.NewDataEventBuilder(capture.elapsedTime, capture.level)
 			if isPausedOrStopped {
-				builder.SetRemainingDistance(capture.distance)
-				builder.SetTime500mAverage(capture.time500m)
-				builder.SetWattsAverage(capture.watts)
-				builder.SetCaloriesTotal(capture.cals)
+				m.emitDataEvent(*events.NewDataEvent(capture.elapsedTime, capture.level,
+					events.WithRemainingDistance(capture.distance),
+					events.WithTime500mAverage(capture.time500m),
+					events.WithWattsAverage(capture.watts),
+					events.WithCaloriesTotal(capture.cals),
+				))
 			} else {
 				strokes++
-				builder.SetDistance(capture.distance)
-				builder.SetStrokes(strokes)
-				builder.SetStrokesPerMinute(capture.strokesPerMinute)
-				builder.SetTime500mSplit(capture.time500m)
-				builder.SetWattsPreviousStroke(capture.watts)
-				builder.SetCaloriesPerHour(capture.cals)
+				m.emitDataEvent(*events.NewDataEvent(capture.elapsedTime, capture.level,
+					events.WithDistance(capture.distance),
+					events.WithStrokes(strokes),
+					events.WithStrokesPerMinute(capture.strokesPerMinute),
+					events.WithTime500mSplit(capture.time500m),
+					events.WithWattsPreviousStroke(capture.watts),
+					events.WithCaloriesPerHour(capture.cals),
+				))
 			}
-			m.emitDataEvent(*builder.Build())
 
 		case strings.HasPrefix(line, "W"):
 			if err := m.writeLine("K"); err != nil {
@@ -72,7 +75,7 @@ func (m *SerialMonitor) Run() {
 			}
 
 		case strings.HasPrefix(line, "R"):
-			m.emitStatusChangeEvent(events.StatusChangeEvent{StatusChange: events.Reset})
+			m.emitStatusChangeEvent(*events.NewStatusChangeEvent(events.Reset))
 			isPausedOrStopped = false
 			strokes = 0
 		}
@@ -139,19 +142,19 @@ func (m *SerialMonitor) Stop() {
 	}
 }
 
-func (m *SerialMonitor) AddObserver(observer events.Observer) {
-	m.observers[observer] = struct{}{}
+func (m *SerialMonitor) AddObserver(o observer.Observer) {
+	m.observers[o] = struct{}{}
 }
 
 func (m *SerialMonitor) emitDataEvent(event events.DataEvent) {
-	for observer := range m.observers {
-		observer.OnData(event)
+	for o := range m.observers {
+		o.OnData(event)
 	}
 }
 
 func (m *SerialMonitor) emitStatusChangeEvent(event events.StatusChangeEvent) {
-	for observer := range m.observers {
-		observer.OnStatusChange(event)
+	for o := range m.observers {
+		o.OnStatusChange(event)
 	}
 }
 
