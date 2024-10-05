@@ -6,8 +6,8 @@ import (
 	"log"
 	"strings"
 
-	"github.com/stefanjenkner/fdf-console-monitor/pkg/events"
-	"github.com/stefanjenkner/fdf-console-monitor/pkg/observer"
+	"github.com/stefanjenkner/fdf-console-monitor/internal/events"
+	"github.com/stefanjenkner/fdf-console-monitor/internal/observer"
 	"go.bug.st/serial"
 )
 

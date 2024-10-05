@@ -1,9 +1,7 @@
 package mocks
 
-//go:
-
 import (
-	"github.com/stefanjenkner/fdf-console-monitor/pkg/events"
+	"github.com/stefanjenkner/fdf-console-monitor/internal/events"
 )
 
 type MockObserver struct {

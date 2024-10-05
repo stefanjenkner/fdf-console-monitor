@@ -5,9 +5,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/stefanjenkner/fdf-console-monitor/mocks"
-	"github.com/stefanjenkner/fdf-console-monitor/pkg/events"
-	"github.com/stefanjenkner/fdf-console-monitor/pkg/observer"
+	"github.com/stefanjenkner/fdf-console-monitor/internal/events"
+	"github.com/stefanjenkner/fdf-console-monitor/internal/mocks"
+	"github.com/stefanjenkner/fdf-console-monitor/internal/observer"
 )
 
 func TestSerialMonitor_RunCallsObserverForDataEvents(t *testing.T) {
