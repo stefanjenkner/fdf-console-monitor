@@ -58,6 +58,7 @@ linters:
             - $gostd
             - github.com/go-ble/ble
             - github.com/stefanjenkner/fdf-console-monitor
+            - go.bug.st/serial
     funlen:
       ignore-comments: true
   exclusions:
