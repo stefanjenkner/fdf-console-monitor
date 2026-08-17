@@ -37,7 +37,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
       - uses: golangci/golangci-lint-action@v9
-      - uses: DavidAnson/markdownlint-cli2-action@v19
+      - uses: DavidAnson/markdownlint-cli2-action@v24
   release:
     needs: [build, lint, test]
     runs-on: ubuntu-latest
