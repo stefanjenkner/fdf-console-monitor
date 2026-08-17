@@ -1,10 +1,9 @@
 module github.com/stefanjenkner/fdf-console-monitor
 
 go 1.23.1
-
 require (
 	github.com/go-ble/ble v0.0.0-20240122180141-8c5522f54333
-	go.bug.st/serial v1.6.2
+	go.bug.st/serial v1.6.4
 )
 
 require (
@@ -18,5 +17,5 @@ require (
 	github.com/pkg/errors v0.8.1 // indirect
 	github.com/raff/goble v0.0.0-20190909174656-72afc67d6a99 // indirect
 	github.com/sirupsen/logrus v1.5.0 // indirect
-	golang.org/x/sys v0.0.0-20220829200755-d48e67d00261 // indirect
+	golang.org/x/sys v0.19.0 // indirect
 )
