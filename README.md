@@ -3,8 +3,18 @@
 Expose a First Degree Fitness water rower as BLE (Bluetooth Low Energy)
 peripheral providing Fitness Machine Service (FTMS) rower data.
 
-Tested with First Degree Fitness NEON plus water rower which comes with the
-(basic) FDF Console and a serial interface.
+Tested with:
+
+- First Degree Fitness NEON plus water rower which comes with the (basic) FDF
+  Console and a serial interface.
+- First Degree Fitness Viking 2 AR — community-reported, works unmodified
+  ([#168](https://github.com/stefanjenkner/fdf-console-monitor/issues/168)).
+
+## Acknowledgements
+
+Thanks to [@evelynDickinson](https://github.com/evelynDickinson) for the
+Viking 2 AR hardware report and protocol observations (`C<nnnn>` handshake ACK
+payload, `H<nnn>` heart-rate lines).
 
 ## Usage
 
