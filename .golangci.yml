@@ -1,35 +1,83 @@
+version: "2"
 linters:
   enable:
-    - errcheck
-    - gosimple
-    - govet
-    - ineffassign
-    - staticcheck
-    - unused
-  presets:
-    - bugs
-    - comment
-    - complexity
-    - error
-  #  - format
-    - import
-  #  - metalinter
-  #  - module
-    - performance
-  #  - style
-  #  - test
-    - unused
-linters-settings:
-  cyclop:
-    max-complexity: 12
-  depguard:
-    rules:
-      main:
-        files:
-          - $all
-        allow:
-          - $gostd
-          - github.com/go-ble/ble
-          - github.com/stefanjenkner/fdf-console-monitor
-  funlen:
-    ignore-comments: true
+    - asasalint
+    - asciicheck
+    - bidichk
+    - bodyclose
+    - contextcheck
+    - cyclop
+    - depguard
+    - dupword
+    - durationcheck
+    - err113
+    - errchkjson
+    - errorlint
+    - exhaustive
+    - fatcontext
+    - funlen
+    - gocheckcompilerdirectives
+    - gochecksumtype
+    - gocognit
+    - gocyclo
+    - godot
+    - godox
+    - gomodguard
+    - gosec
+    - gosmopolitan
+    - loggercheck
+    - maintidx
+    - makezero
+    - misspell
+    - musttag
+    - nestif
+    - nilerr
+    - nilnesserr
+    - noctx
+    - perfsprint
+    - prealloc
+    - protogetter
+    - reassign
+    - recvcheck
+    - rowserrcheck
+    - spancheck
+    - sqlclosecheck
+    - testifylint
+    - unparam
+    - wrapcheck
+    - zerologlint
+  settings:
+    cyclop:
+      max-complexity: 12
+    depguard:
+      rules:
+        main:
+          files:
+            - $all
+          allow:
+            - $gostd
+            - github.com/go-ble/ble
+            - github.com/stefanjenkner/fdf-console-monitor
+    funlen:
+      ignore-comments: true
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gci
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
